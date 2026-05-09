@@ -1,483 +1,612 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Your Name in Landsat · Earth Letters</title>
-  <!-- Iconify (lightweight) -->
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
-  <!-- html2canvas for downloading combined image -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Name In Satellite Style</title>
   <style>
+    @import url('https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js');
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     body {
-      background: #f5f7fb;   /* light, modern background – NASA page feel */
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-      color: #1a2c3e;
-      padding: 1.5rem 1rem;
+      background: #dcdcdc;
+      color: #111;
     }
 
-    /* main container */
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    /* header – clean, minimal */
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: #e9ecef;
-      padding: 0.4rem 1rem;
-      border-radius: 40px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: #0b3b5f;
-      margin-bottom: 1rem;
-    }
-
-    h1 {
-      font-size: clamp(2rem, 8vw, 3.5rem);
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      background: linear-gradient(135deg, #1a5f7a, #0b3b5f);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      margin-bottom: 0.5rem;
-    }
-
-    .sub {
-      font-size: 0.9rem;
-      color: #5b7c99;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    /* control panel */
-    .control-panel {
-      background: white;
-      border-radius: 2rem;
-      padding: 1.2rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-      margin-bottom: 2rem;
+    .topbar {
+      background: #000;
+      color: white;
+      height: 110px;
       display: flex;
-      flex-wrap: wrap;
-      align-items: flex-end;
-      gap: 1rem;
+      align-items: center;
       justify-content: center;
-      border: 1px solid #e2e9f0;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
 
-    .input-group {
-      flex: 2;
-      min-width: 200px;
-    }
-
-    .input-group label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      font-weight: 600;
-      letter-spacing: 1px;
-      color: #2c6e9e;
-      display: block;
-      margin-bottom: 0.3rem;
-    }
-
-    .input-wrapper {
+    .logo {
+      position: absolute;
+      left: 25px;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      background: #f0f4f9;
-      border-radius: 2rem;
-      padding: 0 1rem;
-      border: 1px solid #cfdfed;
-      transition: 0.2s;
+      gap: 14px;
     }
-    .input-wrapper:focus-within {
-      border-color: #2c6e9e;
+
+    .logo-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0a2a88, #1e5fff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .logo-text {
+      font-size: 30px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .title {
+      font-size: 60px;
+      font-weight: 700;
+    }
+
+    .help {
+      position: absolute;
+      right: 25px;
+      width: 52px;
+      height: 52px;
+      border: 3px solid white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .help:hover {
+      background: rgba(255,255,255,0.15);
+      transform: scale(1.05);
+    }
+
+    .help iconify-icon {
+      font-size: 32px;
+      color: white;
+    }
+
+    .info-popup {
+      position: fixed;
+      top: 120px;
+      right: 25px;
+      width: 340px;
       background: white;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      z-index: 999;
+      display: none;
+      animation: popupAnim 0.25s ease;
     }
-    .input-wrapper iconify-icon {
-      color: #7c9ec0;
-      font-size: 1.3rem;
+
+    @keyframes popupAnim {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    input {
+
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .close-btn {
       background: transparent;
       border: none;
-      padding: 0.8rem 0;
-      font-size: 1rem;
-      font-family: monospace;
+      height: auto;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .close-btn iconify-icon {
+      font-size: 26px;
+    }
+
+    .info-popup p {
+      font-size: 17px;
+      line-height: 1.6;
+      color: #222;
+      margin-bottom: 16px;
+    }
+
+    .info-popup a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      background: #111;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: bold;
+      transition: 0.25s;
+    }
+
+    .info-popup a:hover {
+      background: #333;
+    }
+
+    .gallery {
       width: 100%;
+      max-width: 1400px;
+      margin: 60px auto 40px;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      padding: 0 20px;
+      flex-wrap: wrap;
+    }
+
+    .letter {
+      width: 180px;
+      background: #999;
+      border-radius: 2px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .letter-img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      display: block;
+    }
+
+    .letter:hover .letter-img {
+      transform: scale(1.05);
+    }
+
+    .letter-info {
+      padding: 10px 8px 12px;
+      background: #f5f5f5;
+      font-size: 12px;
+    }
+
+    .letter-label {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 5px;
+      display: inline-block;
+      border-bottom: 2px solid #1e5fff;
+    }
+
+    .letter-location {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      margin: 6px 0 4px;
+      color: #1a3e8c;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-size: 11px;
+    }
+
+    .letter-coords {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 9px;
+      color: #444;
+    }
+
+    .letter-location:hover, .letter-coords:hover {
+      color: #ff7b2c;
+    }
+
+    .controls {
+      text-align: center;
+      margin-top: 40px;
+      margin-bottom: 50px;
+    }
+
+    .controls p {
+      font-size: 28px;
+      margin-bottom: 25px;
+    }
+
+    .input-box {
+      display: inline-flex;
+      align-items: center;
+      background: #efefef;
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      gap: 8px;
+    }
+
+    input {
+      width: 320px;
+      height: 60px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 0 18px;
+      font-size: 22px;
       outline: none;
     }
 
     button {
-      background: #1c5d7a;
+      height: 60px;
       border: none;
-      padding: 0 1.4rem;
-      height: 3rem;
-      border-radius: 2rem;
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: white;
+      border-radius: 10px;
+      padding: 0 22px;
+      font-size: 20px;
+      font-weight: bold;
       cursor: pointer;
+      background: white;
+      transition: 0.25s;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      transition: 0.2s;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      gap: 6px;
     }
+
     button:hover {
-      background: #0f4560;
-      transform: translateY(-1px);
-    }
-    .btn-outline {
-      background: white;
-      color: #1c5d7a;
-      border: 1px solid #cbdbe0;
-    }
-    .btn-outline:hover {
-      background: #f0f4f9;
+      background: #ddd;
     }
 
-    /* gallery horizontal scroll */
-    .gallery-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      overflow-y: hidden;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      margin: 1.5rem 0 1rem;
-      border-radius: 1.5rem;
-    }
-    .gallery {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      gap: 1rem;
-      padding-bottom: 0.5rem;
-    }
-
-    /* card – clean, minimalistic */
-    .card {
-      flex: 0 0 auto;
-      width: 220px;
-      background: white;
-      border-radius: 1.2rem;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      transition: 0.2s;
-      border: 1px solid #eef2f8;
-    }
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-    }
-    .card-img {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      background: #d9e3ec;
-    }
-    .card-info {
-      padding: 0.8rem 0.9rem 1rem;
-    }
-    .letter-badge {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #144e6b;
-      border-left: 4px solid #46b5e5;
-      padding-left: 0.6rem;
-      margin-bottom: 0.5rem;
-    }
     .location {
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: #2c6e9e;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      margin: 0.4rem 0;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-    }
-    .coords {
-      font-size: 0.65rem;
-      font-family: monospace;
-      color: #6f8eae;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-    }
-    .location:hover, .coords:hover {
-      color: #e28413;
+      text-align: center;
+      margin-top: 25px;
+      margin-bottom: 60px;
     }
 
-    /* warning */
+    .location h2 {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .location span {
+      font-size: 24px;
+      color: #444;
+    }
+
     .warning {
-      background: #fff3e0;
-      border-left: 4px solid #f5a623;
-      padding: 0.8rem 1rem;
-      border-radius: 1rem;
+      background: #ffeedd;
+      border-left: 6px solid #ff8800;
+      margin: 10px auto;
+      padding: 10px 20px;
+      width: fit-content;
+      max-width: 90%;
+      border-radius: 40px;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      font-size: 0.85rem;
-      margin: 1rem 0;
+      gap: 10px;
     }
 
-    /* download button + footer */
-    .download-area {
-      text-align: center;
-      margin: 2rem 0 1rem;
-    }
-    footer {
-      text-align: center;
-      font-size: 0.7rem;
-      color: #8aaec0;
-      margin-top: 2rem;
-      border-top: 1px solid #e2e9f0;
-      padding-top: 1.2rem;
-    }
+    @media (max-width: 900px) {
+      .topbar {
+        height: auto;
+        min-height: 110px;
+        padding: 20px 10px;
+      }
 
-    @media (max-width: 640px) {
-      body { padding: 0.8rem; }
-      .card { width: 170px; }
-      .letter-badge { font-size: 1.4rem; }
-      .location { font-size: 0.7rem; }
-      .control-panel { padding: 1rem; }
-      button { padding: 0 1rem; height: 2.7rem; font-size: 0.75rem; }
+      .logo {
+        left: 15px;
+      }
+
+      .help {
+        right: 15px;
+        width: 44px;
+        height: 44px;
+      }
+
+      .info-popup {
+        width: calc(100% - 30px);
+        right: 15px;
+        top: 105px;
+      }
+
+      .gallery {
+        gap: 10px;
+      }
+
+      .input-box {
+        width: calc(100% - 20px);
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      input {
+        width: 100%;
+      }
+
+      button {
+        flex: 1;
+        min-width: 80px;
+      }
+
+      .location h2 {
+        font-size: 28px;
+      }
+
+      .location span {
+        font-size: 18px;
+        padding: 0 10px;
+      }
+      .title {
+        font-size: 34px;
+      }
+
+      .logo-text {
+        display: none;
+      }
+
+      .letter {
+        width: 140px;
+      }
+
+      .controls p {
+        font-size: 20px;
+        padding: 0 10px;
+      }
+
+      input {
+        width: 180px;
+        font-size: 18px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <div class="badge">
-      <iconify-icon icon="mdi:satellite-variant"></iconify-icon>
-      NASA / USGS Landsat
-    </div>
-    <h1>Your Name in Landsat</h1>
-    <div class="sub">Earth’s alphabet – real satellite imagery of natural letters</div>
-  </div>
 
-  <div class="control-panel">
-    <div class="input-group">
-      <label>Your name (A–Z, max 15)</label>
-      <div class="input-wrapper">
-        <iconify-icon icon="mdi:earth"></iconify-icon>
-        <input type="text" id="nameInput" placeholder="e.g., BERTRAND" value="BERTRAND" maxlength="15">
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-circle">LS</div>
+      <div class="logo-text">Satellite Science</div>
+    </div>
+
+    <div class="title" id="mainTitle">Your Name In Satellite</div>
+
+    <div class="help" onclick="toggleInfo()">
+      <iconify-icon icon="mdi:help-circle-outline"></iconify-icon>
+    </div>
+
+    <div class="info-popup" id="infoPopup">
+      <div class="popup-header">
+        <span>Information</span>
+        <button class="close-btn" onclick="toggleInfo()">
+          <iconify-icon icon="mdi:close"></iconify-icon>
+        </button>
       </div>
+
+      <p>
+        All those images were taken by NASA / Landsat.<br><br>
+        This site is fully made by PIReactive Rwanda.
+      </p>
+
+      <a href="https://pireactive.vercel.app/about" target="_blank">
+        Contact for a FREE WEBSITE
+        <iconify-icon icon="mdi:open-in-new"></iconify-icon>
+      </a>
     </div>
-    <button id="generateBtn">
-      <iconify-icon icon="mdi:rocket-launch"></iconify-icon> Generate
-    </button>
-    <button id="randomizeBtn" class="btn-outline">
-      <iconify-icon icon="mdi:dice-multiple"></iconify-icon> Randomize
-    </button>
-  </div>
+  </header>
 
-  <div id="warningMsg"></div>
+  <section class="gallery" id="gallery"></section>
 
-  <div class="gallery-wrapper">
-    <div class="gallery" id="gallery"></div>
-  </div>
+  <section class="controls">
+    <p>Type in your name to see it displayed in satellite imagery style!</p>
 
-  <div class="download-area">
-    <button id="downloadBtn">
-      <iconify-icon icon="mdi:download"></iconify-icon> Download as single image
-    </button>
-  </div>
+    <div class="input-box">
+      <input type="text" id="nameInput" placeholder="Enter a name (max 15)" maxlength="15">
+      <button onclick="generateName()">
+        <iconify-icon icon="mdi:rocket-launch"></iconify-icon> Enter
+      </button>
+      <button onclick="downloadPage()">
+        <iconify-icon icon="mdi:download"></iconify-icon> ⬇
+      </button>
+      <button onclick="randomizeAllLetters()">
+        <iconify-icon icon="mdi:dice-multiple"></iconify-icon> ⬛
+      </button>
+    </div>
+    <div id="warningMsg" style="min-height: 50px;"></div>
+  </section>
 
-  <footer>
-    <iconify-icon icon="mdi:map-marker"></iconify-icon> Click any location or coordinates to open Google Maps ·
-    Images are real Landsat scenes · Each letter randomly selects from multiple Earth features
-  </footer>
-</div>
+  <section class="location">
+    <h2 id="locationTitle">Mackenzie River</h2>
+    <span id="locationCoords">68°25'01.0 N 134°08'35.2 W</span>
+  </section>
 
-<script src="info.js"></script>
-<script>
-  // global variables
-  let currentWord = "BERTRAND";
-  let currentLetterData = {};  // stores selected image object per position
+  <script src="info.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    let currentWord = "";
+    let currentLetterData = {};
 
-  // helper: open google maps
-  window.openMaps = function(lat, lng) {
-    window.open(`https://www.google.com/maps?q=${lat},${lng}&z=13`, '_blank');
-  };
-
-  // show warning inside #warningMsg
-  function showWarning(text, isError = true) {
-    const warnDiv = document.getElementById('warningMsg');
-    warnDiv.innerHTML = `<div class="warning"><iconify-icon icon="mdi:alert-circle"></iconify-icon> ${text}</div>`;
-    setTimeout(() => { warnDiv.innerHTML = ''; }, 4500);
-  }
-
-  // render the word into horizontal gallery
-  function renderWord(word, randomizeAll = false) {
-    const container = document.getElementById('gallery');
-    const upperWord = word.toUpperCase().slice(0, 15);
-    
-    if (upperWord.length > 15) {
-      showWarning(`Maximum 15 characters. "${word}" has ${upperWord.length}.`);
-      return false;
+    function openMaps(lat, lon) {
+      window.open(`https://www.google.com/maps?q=${lat},${lon}&z=12`, '_blank');
     }
-    if (randomizeAll) currentLetterData = {};
-    
-    let html = '';
-    for (let i = 0; i < upperWord.length; i++) {
-      const ch = upperWord[i];
-      if (/[A-Z]/.test(ch)) {
-        const options = window.earthDatabase?.[ch.toLowerCase()];
-        if (!options || options.length === 0) {
-          // fallback card if no data
+
+    function showWarning(text) {
+      const warnDiv = document.getElementById('warningMsg');
+      warnDiv.innerHTML = `<div class="warning"><iconify-icon icon="mdi:alert-circle"></iconify-icon> ${text}</div>`;
+      setTimeout(() => { warnDiv.innerHTML = ''; }, 4000);
+    }
+
+    function generateName() {
+      const input = document.getElementById('nameInput').value.trim().toUpperCase();
+      if (input === "") {
+        showWarning("Please enter a name!");
+        return;
+      }
+      if (input.length > 15) {
+        showWarning(`Maximum 15 characters. "${input}" has ${input.length}.`);
+        return;
+      }
+      
+      currentWord = input;
+      const title = document.getElementById('mainTitle');
+      title.textContent = currentWord + ' In Satellite';
+      
+      renderWord(currentWord, false);
+    }
+
+    function renderWord(word, randomizeAll = false) {
+      const container = document.getElementById('gallery');
+      if (!container) return;
+      
+      if (randomizeAll) currentLetterData = {};
+      
+      let html = '';
+      for (let i = 0; i < word.length; i++) {
+        const ch = word[i];
+        if (/[A-Z]/.test(ch)) {
+          const options = window.earthDatabase?.[ch.toLowerCase()];
+          if (!options || options.length === 0) {
+            html += `
+              <div class="letter">
+                <img class="letter-img" src="https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57732/amazon_oli_2014114_lrg.jpg" alt="fallback">
+                <div class="letter-info">
+                  <div class="letter-label">${ch}</div>
+                  <div class="letter-location">No data yet</div>
+                  <div class="letter-coords">Add to info.js</div>
+                </div>
+              </div>`;
+            continue;
+          }
+          
+          const key = `${ch}_${i}`;
+          let data;
+          if (!randomizeAll && currentLetterData[key]) {
+            data = currentLetterData[key];
+          } else {
+            const rand = Math.floor(Math.random() * options.length);
+            data = options[rand];
+            currentLetterData[key] = data;
+          }
+          
+          const imgPath = `Images/${data.file}`;
           html += `
-            <div class="card">
-              <img class="card-img" src="https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57732/amazon_oli_2014114_lrg.jpg" alt="fallback">
-              <div class="card-info">
-                <div class="letter-badge">${ch}</div>
-                <div class="location">No data yet</div>
-                <div class="coords">Add in info.js</div>
+            <div class="letter">
+              <img class="letter-img" src="${imgPath}" 
+                   onerror="this.src='https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57732/amazon_oli_2014114_lrg.jpg'"
+                   alt="Landsat ${ch}">
+              <div class="letter-info">
+                <div class="letter-label">${ch}</div>
+                <div class="letter-location" onclick="openMaps(${data.lat}, ${data.lon})">
+                  <iconify-icon icon="mdi:map-marker"></iconify-icon> ${data.location}
+                </div>
+                <div class="letter-coords" onclick="openMaps(${data.lat}, ${data.lon})">
+                  <iconify-icon icon="mdi:cursor-default-click"></iconify-icon> ${data.coords_dms}
+                </div>
               </div>
             </div>`;
-          continue;
-        }
-        
-        const key = `${ch}_${i}`;
-        let data;
-        if (!randomizeAll && currentLetterData[key]) {
-          data = currentLetterData[key];
+        } else if (ch === ' ') {
+          html += `<div style="width: 30px; text-align:center; align-self:center;">␣</div>`;
         } else {
-          const rand = Math.floor(Math.random() * options.length);
-          data = options[rand];
-          currentLetterData[key] = data;
+          html += `
+            <div class="letter" style="opacity:0.6;">
+              <div class="letter-img" style="background:#aaa; display:flex; align-items:center; justify-content:center;">
+                <iconify-icon icon="mdi:help-circle" style="font-size:40px;"></iconify-icon>
+              </div>
+              <div class="letter-info">
+                <div class="letter-label">${ch}</div>
+                <div class="letter-location">Only A-Z</div>
+                <div class="letter-coords">skip special</div>
+              </div>
+            </div>`;
         }
-        
-        const imgPath = `Images/${data.file}`;
-        html += `
-          <div class="card">
-            <img class="card-img" src="${imgPath}" 
-                 onerror="this.src='https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57732/amazon_oli_2014114_lrg.jpg'"
-                 alt="Landsat letter ${ch}">
-            <div class="card-info">
-              <div class="letter-badge">${ch}</div>
-              <div class="location" onclick="openMaps(${data.lat}, ${data.lon})">
-                <iconify-icon icon="mdi:map-marker"></iconify-icon> ${data.location}
-              </div>
-              <div class="coords" onclick="openMaps(${data.lat}, ${data.lon})">
-                <iconify-icon icon="mdi:cursor-default-click"></iconify-icon> ${data.coords_dms}
-              </div>
-            </div>
-          </div>`;
-      } else if (ch === ' ') {
-        html += `<div style="flex:0 0 auto; width: 25px; text-align:center; color:#8aaec0;">␣</div>`;
-      } else {
-        html += `
-          <div class="card" style="opacity:0.7;">
-            <div class="card-img" style="background:#e2e9f0; display:flex; align-items:center; justify-content:center;">
-              <iconify-icon icon="mdi:help-circle" style="font-size:2rem; color:#8aaec0;"></iconify-icon>
-            </div>
-            <div class="card-info">
-              <div class="letter-badge">${ch}</div>
-              <div class="location">Only A-Z</div>
-              <div class="coords">skip special</div>
-            </div>
-          </div>`;
+      }
+      container.innerHTML = html;
+      
+      // Update location section with first letter's info if available
+      if (word.length > 0) {
+        const firstChar = word[0];
+        const options = window.earthDatabase?.[firstChar.toLowerCase()];
+        if (options && options.length > 0) {
+          const firstData = options[0];
+          document.getElementById('locationTitle').textContent = firstData.location;
+          document.getElementById('locationCoords').textContent = firstData.coords_dms;
+        }
       }
     }
-    container.innerHTML = html;
-    // update page title (optional)
-    document.querySelector('h1').innerHTML = upperWord.length ? `${upperWord} in Landsat` : 'Your Name in Landsat';
-    return true;
-  }
 
-  // generate from input
-  function generate() {
-    let raw = document.getElementById('nameInput').value.trim();
-    if (raw === "") raw = "BERTRAND";
-    if (raw.length > 15) {
-      showWarning(`Maximum 15 characters. "${raw}" has ${raw.length}.`);
-      return;
+    function randomizeAllLetters() {
+      if (!currentWord) {
+        showWarning("Generate a name first!");
+        return;
+      }
+      renderWord(currentWord, true);
     }
-    currentWord = raw.toUpperCase();
-    renderWord(currentWord, false);
-  }
-  
-  function randomizeAll() {
-    if (!currentWord) currentWord = "BERTRAND";
-    renderWord(currentWord, true);
-  }
-  
-  // download combined image of the entire gallery (horizontal strip)
-  async function downloadCombinedImage() {
-    const galleryEl = document.getElementById('gallery');
-    if (!galleryEl || galleryEl.children.length === 0) {
-      showWarning("No name generated yet. Please type a name first.", false);
-      return;
-    }
-    
-    // show loading state on button
-    const btn = document.getElementById('downloadBtn');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<iconify-icon icon="mdi:loading"></iconify-icon> Rendering...';
-    btn.disabled = true;
-    
-    try {
-      // Use html2canvas on the gallery wrapper to capture the scrollable content fully
-      // But because it's horizontal scroll, we need to capture the inner gallery (flex row)
-      // We'll temporarily set overflow to visible, capture, then revert.
-      const wrapper = document.querySelector('.gallery-wrapper');
-      const originalOverflow = wrapper.style.overflow;
-      wrapper.style.overflow = 'visible';
+
+    function downloadPage() {
+      const gallery = document.getElementById('gallery');
+      if (!gallery || gallery.children.length === 0) {
+        showWarning("No name generated yet. Type a name first!");
+        return;
+      }
       
-      const canvas = await html2canvas(galleryEl, {
+      const btn = event.target.closest('button');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<iconify-icon icon="mdi:loading"></iconify-icon> Capturing...';
+      btn.disabled = true;
+      
+      html2canvas(gallery, {
         scale: 2,
-        backgroundColor: '#f5f7fb',
+        backgroundColor: '#dcdcdc',
         useCORS: true,
-        logging: false,
-        allowTaint: false
+        logging: false
+      }).then(canvas => {
+        const link = document.createElement('a');
+        const name = currentWord || 'satellite_name';
+        link.download = `${name}_satellite.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+      }).catch(err => {
+        console.error(err);
+        showWarning("Could not capture image. Try again.");
+      }).finally(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
       });
-      
-      wrapper.style.overflow = originalOverflow;
-      
-      // download
-      const link = document.createElement('a');
-      const name = currentWord.replace(/\s/g, '_') || 'landsat_name';
-      link.download = `${name}_landsat.png`;
-      link.href = canvas.toDataURL();
-      link.click();
-      
-    } catch (err) {
-      console.error(err);
-      showWarning("Could not capture image. Try again or use browser screenshot.", true);
-    } finally {
-      btn.innerHTML = originalText;
-      btn.disabled = false;
     }
-  }
-  
-  // event listeners
-  document.getElementById('generateBtn').addEventListener('click', generate);
-  document.getElementById('randomizeBtn').addEventListener('click', randomizeAll);
-  document.getElementById('downloadBtn').addEventListener('click', downloadCombinedImage);
-  document.getElementById('nameInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') generate(); });
-  
-  // initial render with BERTRAND (or whatever default)
-  renderWord("BERTRAND", false);
-</script>
+
+    function toggleInfo() {
+      const popup = document.getElementById('infoPopup');
+      popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.openMaps = openMaps;
+    window.generateName = generateName;
+    window.randomizeAllLetters = randomizeAllLetters;
+    window.toggleInfo = toggleInfo;
+    window.downloadPage = downloadPage;
+  </script>
 </body>
 </html>
