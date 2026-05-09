@@ -6,13 +6,14 @@
   <title>Your Name In Landsat</title>
 
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: Inter, Arial, sans-serif;
+      font-family: 'Inter', Arial, sans-serif;
     }
 
     body {
@@ -47,7 +48,7 @@
       width: 58px;
       height: 58px;
       border-radius: 50%;
-      background: linear-gradient(135deg,#0a43ff,#2dc7ff);
+      background: linear-gradient(135deg, #0a43ff, #2dc7ff);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -81,7 +82,7 @@
     }
 
     .help-btn:hover {
-      background: rgba(255,255,255,0.15);
+      background: rgba(255, 255, 255, 0.15);
     }
 
     .help-btn iconify-icon {
@@ -96,7 +97,7 @@
       background: white;
       border-radius: 18px;
       padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       display: none;
       z-index: 9999;
     }
@@ -131,51 +132,84 @@
 
     .letters {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      flex-wrap: nowrap;
+      overflow-x: auto;
       gap: 14px;
       margin-bottom: 50px;
+      padding-bottom: 10px;
+      justify-content: flex-start;
+      scroll-behavior: smooth;
     }
 
     .letter-card {
+      flex: 0 0 auto;
       width: 170px;
-      height: 430px;
-      overflow: hidden;
-      border-radius: 6px;
       background: #999;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      transition: transform 0.2s, box-shadow 0.2s;
       position: relative;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      transition: 0.3s;
     }
 
     .letter-card:hover {
       transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .image-wrapper {
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
     }
 
     .letter-card img {
       width: 100%;
-      height: 100%;
+      aspect-ratio: 1 / 1;
       object-fit: cover;
+      display: block;
+      transition: transform 0.3s;
+    }
+
+    .letter-card:hover img {
+      transform: scale(1.05);
     }
 
     .location-tag {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.85);
       color: white;
-      padding: 20px 12px 12px;
     }
 
     .location-tag h4 {
-      font-size: 16px;
-      margin-bottom: 6px;
+      font-size: 13px;
+      margin-bottom: 8px;
+      font-weight: 500;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .location-tag p {
+    .open-btn {
+      width: 100%;
+      background: #1e5fff;
+      border: none;
+      padding: 8px;
+      border-radius: 6px;
+      color: white;
+      font-weight: 600;
       font-size: 12px;
-      opacity: 0.9;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .open-btn:hover {
+      background: #0a43ff;
     }
 
     .controls {
@@ -197,7 +231,7 @@
       background: white;
       padding: 12px;
       border-radius: 18px;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
     }
 
     input {
@@ -220,16 +254,30 @@
       color: white;
       font-size: 18px;
       font-weight: 700;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
+      transition: background 0.2s, transform 0.1s;
     }
 
-    button iconify-icon {
-      font-size: 22px;
+    button:active {
+      transform: scale(0.97);
     }
 
-    @media(max-width: 900px){
+    button:hover {
+      background: #333;
+    }
+
+    .warning {
+      background: #ffdd99;
+      border-left: 5px solid #ff8800;
+      padding: 12px 20px;
+      margin: 20px auto;
+      border-radius: 10px;
+      display: inline-block;
+    }
+
+    @media (max-width: 900px) {
       .title {
         font-size: 30px;
         padding: 0 70px;
@@ -240,8 +288,7 @@
       }
 
       .letter-card {
-        width: 120px;
-        height: 300px;
+        width: 140px;
       }
 
       .controls p {
@@ -265,6 +312,11 @@
         width: calc(100% - 30px);
         right: 15px;
       }
+
+      .location-tag h4 {
+        font-size: 11px;
+        white-space: normal;
+      }
     }
   </style>
 </head>
@@ -286,7 +338,7 @@
 <div class="popup" id="popup">
   <h3>About</h3>
   <p>
-    All those images were taken by NASA.<br><br>
+    All those images were taken by NASA / Landsat.<br><br>
     This site is fully made by PIReactive Rwanda.
   </p>
 
@@ -297,223 +349,219 @@
 </div>
 
 <section class="main">
-
   <div class="letters" id="lettersContainer"></div>
 
   <div class="controls">
     <p>Type in your name to see it spelled out in Landsat imagery of Earth!</p>
 
     <div class="input-wrap">
-      <input type="text" id="nameInput" placeholder="Enter a name" />
-
+      <input type="text" id="nameInput" placeholder="Enter a name (max 15)" maxlength="15" autocomplete="off" />
       <button onclick="generateName()">
         <iconify-icon icon="mdi:keyboard-return"></iconify-icon>
         Enter
       </button>
-
+      <button onclick="randomizeLetters()">
+        <iconify-icon icon="mdi:dice-multiple"></iconify-icon>
+        Random
+      </button>
       <button onclick="downloadCombinedImage()">
         <iconify-icon icon="mdi:download"></iconify-icon>
         Download
       </button>
     </div>
+    <div id="warningMsg" style="margin-top: 15px;"></div>
   </div>
-
 </section>
 
+<script src="info.js"></script>
 <script>
+  let currentCardsData = [];
+  let currentNameRaw = '';
 
-const lettersDB = {
-  a:[
-    {img:'Images/a.png',place:'Lake Guakhmaz, Azerbaijan',coords:'40°39\'50.8 N 47°06\'36.2 E'},
-    {img:'Images/a(1).png',place:'Farm Island, Maine',coords:'45°43\'43.8 N 69°46\'08.9 W'}
-  ],
+  function showWarning(msg) {
+    const warnDiv = document.getElementById('warningMsg');
+    warnDiv.innerHTML = `<div class="warning">⚠️ ${msg}</div>`;
+    setTimeout(() => {
+      if (warnDiv.innerHTML === `<div class="warning">⚠️ ${msg}</div>`) {
+        warnDiv.innerHTML = '';
+      }
+    }, 3000);
+  }
 
-  b:[
-    {img:'Images/b.png',place:'Humaitá, Brazil',coords:'7°37\'00.1 S 62°55\'17.0 W'}
-  ],
+  function togglePopup() {
+    const popup = document.getElementById('popup');
+    popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+  }
 
-  c:[
-    {img:'Images/c.png',place:'Black Rock Desert, Nevada',coords:'40°47\'15.8 N 119°12\'13.0 W'}
-  ],
+  function openGoogleMaps(lat, lon) {
+    window.open(`https://www.google.com/maps?q=${lat},${lon}&z=12`, '_blank');
+  }
 
-  d:[
-    {img:'Images/d.png',place:'Lake Tandou, Australia',coords:'32°37\'17.8 S 142°04\'21.4 E'}
-  ],
+  function renderCards(cardsArray, nameString) {
+    const container = document.getElementById('lettersContainer');
+    container.innerHTML = '';
 
-  e:[
-    {img:'Images/e.png',place:'Sea of Okhotsk',coords:'54°42\'50.3 N 136°34\'20.4 E'}
-  ],
+    if (!cardsArray || cardsArray.length === 0) return;
 
-  f:[
-    {img:'Images/f.png',place:'Kruger National Park, South Africa',coords:'28°44\'01.3 S 29°12\'30.1 E'}
-  ],
+    cardsArray.forEach((card, idx) => {
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'letter-card';
 
-  g:[
-    {img:'Images/g.png',place:'Fonte Boa, Amazonas',coords:'2°26\'30.8 S 66°16\'43.7 W'}
-  ],
+      const imageWrapper = document.createElement('div');
+      imageWrapper.className = 'image-wrapper';
+      imageWrapper.onclick = () => openGoogleMaps(card.lat, card.lon);
 
-  h:[
-    {img:'Images/h.png',place:'Khorinsky District, Russia',coords:'52°02\'50.4 N 109°46\'51.2 E'}
-  ],
+      const img = document.createElement('img');
+      img.src = card.img;
+      img.alt = nameString[idx] || 'letter';
+      img.loading = 'lazy';
+      img.onerror = () => {
+        img.src = 'https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57732/amazon_oli_2014114_lrg.jpg';
+      };
 
-  i:[
-    {img:'Images/i.png',place:'Etosha National Park, Namibia',coords:'18°29\'15.2 S 16°10\'14.6 E'}
-  ],
+      imageWrapper.appendChild(img);
 
-  j:[
-    {img:'Images/j.png',place:'Great Barrier Reef',coords:'18°20\'55.3 S 146°50\'51.4 E'}
-  ],
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'location-tag';
 
-  k:[
-    {img:'Images/k.png',place:'Golmud, China',coords:'35°36\'46.3 N 95°03\'45.9 E'}
-  ],
+      const title = document.createElement('h4');
+      title.textContent = card.place;
 
-  l:[
-    {img:'Images/l.png',place:'Regina, Saskatchewan, Canada',coords:'50°12\'41.3 N 104°43\'38.1 W'}
-  ],
+      const openBtn = document.createElement('button');
+      openBtn.className = 'open-btn';
+      openBtn.innerHTML = '<iconify-icon icon="mdi:map-marker"></iconify-icon> Open →';
+      openBtn.onclick = (e) => {
+        e.stopPropagation();
+        openGoogleMaps(card.lat, card.lon);
+      };
 
-  m:[
-    {img:'Images/m.png',place:'Shenandoah River, Virginia',coords:'38°46\'32.2 N 78°24\'07.1 W'}
-  ],
+      infoDiv.appendChild(title);
+      infoDiv.appendChild(openBtn);
 
-  n:[
-    {img:'Images/n.png',place:'Yapacani, Bolivia',coords:'17°18\'29.7 S 63°53\'19.0 W'}
-  ],
+      cardDiv.appendChild(imageWrapper);
+      cardDiv.appendChild(infoDiv);
 
-  o:[
-    {img:'Images/o.png',place:'Crater Lake, Oregon',coords:'42°56\'10.0 N 122°06\'04.7 W'}
-  ],
+      container.appendChild(cardDiv);
+    });
+  }
 
-  p:[
-    {img:'Images/p.png',place:'Mackenzie River Delta, Canada',coords:'68°12\'54.4 N 134°23\'15.3 W'}
-  ],
-
-  q:[
-    {img:'Images/q.png',place:'Lonar Crater, India',coords:'19°58\'36.8 N 76°30\'30.6 E'}
-  ],
-
-  r:[
-    {img:'Images/r.png',place:'Canyonlands National Park, Utah',coords:'38°26\'27.8 N 109°45\'03.3 W'}
-  ],
-
-  s:[
-    {img:'Images/s.png',place:'N’Djamena, Chad',coords:'12°00\'27.7 N 15°03\'46.2 E'}
-  ],
-
-  t:[
-    {img:'Images/t.png',place:'Lena River Delta',coords:'72°52\'40.3 N 129°31\'51.5 E'}
-  ],
-
-  u:[
-    {img:'Images/u.png',place:'Canyonlands National Park, Utah',coords:'38°16\'09.1 N 109°55\'32.7 W'}
-  ],
-
-  v:[
-    {img:'Images/v.png',place:'Cellina and Meduna Rivers, Italy',coords:'46°06\'41.4 N 12°45\'26.6 E'}
-  ],
-
-  w:[
-    {img:'Images/w.png',place:'Ponoy River, Russia',coords:'67°02\'10.9 N 40°20\'19.3 E'}
-  ],
-
-  x:[
-    {img:'Images/x.png',place:'Sermersooq Municipality, Greenland',coords:'66°37\'05.2 N 36°22\'05.9 W'}
-  ],
-
-  y:[
-    {img:'Images/y.png',place:'Estuario de Virrila, Peru',coords:'5°51\'53.4 S 80°43\'51.6 W'}
-  ],
-
-  z:[
-    {img:'Images/z.png',place:'Primavera do Leste, Brazil',coords:'15°29\'38.9 S 54°20\'27.5 W'}
-  ]
-};
-
-function togglePopup(){
-  const popup = document.getElementById('popup');
-  popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
-}
-
-function generateName(){
-
-  const input = document.getElementById('nameInput').value.trim().toLowerCase();
-  const container = document.getElementById('lettersContainer');
-
-  container.innerHTML = '';
-
-  if(!input) return;
-
-  document.getElementById('mainTitle').textContent = input.toUpperCase() + ' In Landsat';
-
-  for(let letter of input){
-
-    if(lettersDB[letter]){
-
-      const variants = lettersDB[letter];
-      const chosen = variants[Math.floor(Math.random()*variants.length)];
-
-      const card = document.createElement('div');
-      card.className = 'letter-card';
-
-      card.innerHTML = `
-        <img src="${chosen.img}" alt="${letter}">
-
-        <div class="location-tag">
-          <h4>${chosen.place}</h4>
-          <p>${chosen.coords}</p>
-        </div>
-      `;
-
-      container.appendChild(card);
+  function generateName() {
+    const input = document.getElementById('nameInput').value.trim().toLowerCase();
+    
+    if (!input) {
+      showWarning('Please enter a name!');
+      return;
     }
+
+    if (input.length > 15) {
+      showWarning(`Maximum 15 characters. "${input}" has ${input.length}.`);
+      return;
+    }
+
+    if (!window.earthDatabase) {
+      showWarning('Database not loaded. Make sure info.js is in the same folder.');
+      return;
+    }
+
+    currentNameRaw = input;
+    const cards = [];
+
+    for (let letter of input) {
+      const options = window.earthDatabase[letter];
+      if (!options || options.length === 0) {
+        showWarning(`Letter "${letter.toUpperCase()}" not available in database.`);
+        return;
+      }
+      const randomIndex = Math.floor(Math.random() * options.length);
+      cards.push({ ...options[randomIndex] });
+    }
+
+    currentCardsData = cards;
+    document.getElementById('mainTitle').textContent = input.toUpperCase() + ' In Landsat';
+    renderCards(cards, input);
   }
-}
 
-async function downloadCombinedImage(){
+  function randomizeLetters() {
+    if (!currentNameRaw || currentCardsData.length === 0) {
+      showWarning('Generate a name first!');
+      return;
+    }
 
-  const cards = document.querySelectorAll('.letter-card img');
-
-  if(cards.length === 0){
-    alert('Generate a name first.');
-    return;
-  }
-
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-
-  const width = 170;
-  const height = 430;
-
-  canvas.width = width * cards.length;
-  canvas.height = height;
-
-  let loaded = 0;
-
-  cards.forEach((card,index)=>{
-
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = card.src;
-
-    img.onload = ()=>{
-      ctx.drawImage(img,index*width,0,width,height);
-
-      loaded++;
-
-      if(loaded === cards.length){
-
-        const link = document.createElement('a');
-        link.download = 'landsat-name.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+    const newCards = [];
+    for (let letter of currentNameRaw) {
+      const options = window.earthDatabase[letter];
+      if (options && options.length > 0) {
+        const randomIndex = Math.floor(Math.random() * options.length);
+        newCards.push({ ...options[randomIndex] });
       }
     }
-  });
-}
 
-generateName();
+    if (newCards.length === currentNameRaw.length) {
+      currentCardsData = newCards;
+      renderCards(newCards, currentNameRaw);
+    }
+  }
 
+  async function downloadCombinedImage() {
+    const cards = document.querySelectorAll('.letter-card');
+
+    if (cards.length === 0) {
+      showWarning('Generate a name first!');
+      return;
+    }
+
+    const firstCard = cards[0];
+    const width = firstCard.offsetWidth;
+    const height = firstCard.offsetHeight;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = width * cards.length;
+    canvas.height = height;
+
+    let loaded = 0;
+
+    for (let index = 0; index < cards.length; index++) {
+      const card = cards[index];
+      const img = card.querySelector('img');
+      
+      await new Promise((resolve) => {
+        const tempImg = new Image();
+        tempImg.crossOrigin = 'Anonymous';
+        tempImg.src = img.src;
+
+        tempImg.onload = () => {
+          ctx.drawImage(tempImg, index * width, 0, width, height);
+          loaded++;
+          resolve();
+        };
+
+        tempImg.onerror = () => {
+          loaded++;
+          resolve();
+        };
+      });
+    }
+
+    if (loaded === cards.length) {
+      const link = document.createElement('a');
+      const name = currentNameRaw || 'landsat';
+      link.download = `${name}_landsat.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+  }
+
+  // Default demo on page load
+  setTimeout(() => {
+    if (window.earthDatabase) {
+      document.getElementById('nameInput').value = 'BERTRAND';
+      generateName();
+    } else {
+      showWarning('Waiting for database... Make sure info.js is loaded.');
+    }
+  }, 100);
 </script>
-
 </body>
 </html>
