@@ -6,7 +6,6 @@
   <title>Your Name In Landsat</title>
 
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
     * {
@@ -54,6 +53,7 @@
       justify-content: center;
       font-weight: bold;
       font-size: 20px;
+      color: white;
     }
 
     .logo span {
@@ -74,12 +74,13 @@
       height: 50px;
       border-radius: 50%;
       border: 2px solid white;
+      background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: 0.3s;
-      background: transparent;
+      color: white;
     }
 
     .help-btn:hover {
@@ -103,6 +104,10 @@
       z-index: 9999;
     }
 
+    .popup.active {
+      display: block;
+    }
+
     .popup h3 {
       margin-bottom: 10px;
     }
@@ -123,6 +128,11 @@
       border-radius: 12px;
       text-decoration: none;
       font-weight: 700;
+      transition: background 0.2s;
+    }
+
+    .popup a:hover {
+      background: #333;
     }
 
     .main {
@@ -131,7 +141,6 @@
       padding: 40px 20px 80px;
     }
 
-    /* FLEXBOX LAYOUT - horizontal scroll */
     .letters {
       display: flex;
       flex-direction: row;
@@ -143,6 +152,7 @@
       justify-content: flex-start;
       scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
+      min-height: 300px;
     }
 
     .letter-card {
@@ -164,6 +174,7 @@
       position: relative;
       cursor: pointer;
       overflow: hidden;
+      background: #ddd;
     }
 
     .letter-card img {
@@ -274,6 +285,11 @@
       background: #333;
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     button:focus-visible {
       outline: 3px solid #1e5fff;
       outline-offset: 2px;
@@ -286,21 +302,11 @@
       margin: 20px auto;
       border-radius: 10px;
       display: inline-block;
-    }
-
-    .loading-indicator {
-      display: none;
-      padding: 40px;
-      text-align: center;
-      font-size: 18px;
-      color: #666;
-    }
-
-    .loading-indicator.active {
-      display: block;
+      color: #333;
     }
 
     .empty-state {
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -315,6 +321,17 @@
       font-size: 64px;
       margin-bottom: 16px;
       color: #999;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
     }
 
     @media (max-width: 900px) {
@@ -394,7 +411,7 @@
   <div class="letters" id="lettersContainer" role="list" aria-label="Landsat letter images">
     <div class="empty-state" id="emptyState">
       <iconify-icon icon="mdi:earth" aria-hidden="true"></iconify-icon>
-      <p>Type a name to see it in Landsat imagery</p>
+      <p>Loading image database...</p>
     </div>
   </div>
 
@@ -402,7 +419,7 @@
     <p>Type in your name to see it spelled out in Landsat imagery of Earth!</p>
 
     <div class="input-wrap">
-      <label for="nameInput" class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">Enter your name</label>
+      <label for="nameInput" class="sr-only">Enter your name</label>
       <input type="text" id="nameInput" placeholder="LANDSAT, NAME, TYPE" maxlength="15" autocomplete="off" aria-describedby="warningMsg" />
       <button id="generateBtn" aria-label="Generate Landsat images">
         <iconify-icon icon="mdi:keyboard-return" aria-hidden="true"></iconify-icon>
@@ -417,8 +434,15 @@
   </div>
 </main>
 
+<!-- Load the image database -->
+<script src="images.js"></script>
+
 <script>
-  (function() {
+(function() {
+  'use strict';
+
+  // Wait for DOM and database to be ready
+  function initializeApp() {
     // DOM elements
     const nameInput = document.getElementById('nameInput');
     const generateBtn = document.getElementById('generateBtn');
@@ -431,49 +455,80 @@
     const warningMsg = document.getElementById('warningMsg');
     const emptyState = document.getElementById('emptyState');
 
+    // State
     let currentCardsData = [];
     let currentNameRaw = '';
-    let isLoading = false;
+    let isProcessing = false;
 
+    // Check if database exists
+    function checkDatabase() {
+      if (typeof earthDatabase === 'undefined' || !earthDatabase) {
+        emptyState.innerHTML = `
+          <iconify-icon icon="mdi:database-off" aria-hidden="true"></iconify-icon>
+          <p>Image database not loaded.<br>Please make sure images.js exists and is properly configured.</p>
+        `;
+        emptyState.style.display = 'flex';
+        return false;
+      }
+      return true;
+    }
+
+    // Show warning message
     function showWarning(msg) {
       warningMsg.innerHTML = `<div class="warning" role="alert">⚠️ ${msg}</div>`;
-      setTimeout(() => {
-        if (warningMsg.innerHTML === `<div class="warning" role="alert">⚠️ ${msg}</div>`) {
-          warningMsg.innerHTML = '';
-        }
+      clearTimeout(window.warningTimeout);
+      window.warningTimeout = setTimeout(() => {
+        warningMsg.innerHTML = '';
       }, 4000);
     }
 
-    function clearWarning() {
-      warningMsg.innerHTML = '';
-    }
-
+    // Open location in Google Maps
     function openGoogleMaps(lat, lon) {
-      window.open(`https://www.google.com/maps?q=${lat},${lon}&z=12`, '_blank', 'noopener,noreferrer');
+      if (lat && lon) {
+        window.open(`https://www.google.com/maps?q=${lat},${lon}&z=12`, '_blank', 'noopener,noreferrer');
+      }
     }
 
+    // Render letter cards
     function renderCards(cardsArray, nameString) {
-      emptyState.style.display = 'none';
-      lettersContainer.innerHTML = '';
-
       if (!cardsArray || cardsArray.length === 0) {
-        emptyState.style.display = 'flex';
+        if (emptyState) {
+          emptyState.style.display = 'flex';
+          emptyState.innerHTML = `
+            <iconify-icon icon="mdi:earth" aria-hidden="true"></iconify-icon>
+            <p>Type a name to see it in Landsat imagery</p>
+          `;
+        }
+        lettersContainer.innerHTML = '';
+        lettersContainer.appendChild(emptyState);
         return;
       }
 
+      // Hide empty state
+      if (emptyState) {
+        emptyState.style.display = 'none';
+      }
+
+      // Clear container
+      lettersContainer.innerHTML = '';
+
+      // Create document fragment for better performance
       const fragment = document.createDocumentFragment();
 
       cardsArray.forEach((card, idx) => {
+        const letter = nameString[idx] || '';
+        
         const cardDiv = document.createElement('div');
         cardDiv.className = 'letter-card';
         cardDiv.setAttribute('role', 'listitem');
-        cardDiv.setAttribute('aria-label', `Letter ${nameString[idx]?.toUpperCase() || ''} at ${card.place}`);
+        cardDiv.setAttribute('aria-label', `Letter ${letter.toUpperCase()} - ${card.place || 'Unknown location'}`);
 
+        // Image wrapper
         const imageWrapper = document.createElement('div');
         imageWrapper.className = 'image-wrapper';
         imageWrapper.setAttribute('role', 'button');
         imageWrapper.setAttribute('tabindex', '0');
-        imageWrapper.setAttribute('aria-label', `View ${card.place} on Google Maps`);
+        imageWrapper.setAttribute('aria-label', `View ${card.place || 'location'} on Google Maps`);
         imageWrapper.addEventListener('click', () => openGoogleMaps(card.lat, card.lon));
         imageWrapper.addEventListener('keypress', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -482,27 +537,45 @@
           }
         });
 
+        // Image
         const img = document.createElement('img');
-        img.src = card.img;
-        img.alt = `Landsat image of ${card.place} forming letter ${nameString[idx]?.toUpperCase() || ''}`;
+        img.src = card.img || '';
+        img.alt = `Landsat satellite image of ${card.place || 'Earth'} showing letter ${letter.toUpperCase()}`;
         img.loading = 'lazy';
+        
+        // Error handling for images
         img.onerror = function() {
-          this.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="170" height="170"%3E%3Crect fill="%23ddd" width="170" height="170"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="14" text-anchor="middle" x="85" y="90"%3EImage not available%3C/text%3E%3C/svg%3E';
+          this.src = 'data:image/svg+xml,' + encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="170" height="170">
+              <rect fill="%23e0e0e0" width="170" height="170"/>
+              <text fill="%23999999" font-family="Arial,sans-serif" font-size="16" text-anchor="middle" x="85" y="85">Image</text>
+              <text fill="%23999999" font-family="Arial,sans-serif" font-size="16" text-anchor="middle" x="85" y="105">Unavailable</text>
+            </svg>
+          `);
           this.alt = 'Image not available';
         };
 
+        img.onload = function() {
+          this.style.opacity = '1';
+        };
+
+        img.style.opacity = '0';
+        img.style.transition = 'opacity 0.3s';
+
         imageWrapper.appendChild(img);
 
+        // Location info
         const infoDiv = document.createElement('div');
         infoDiv.className = 'location-tag';
 
         const title = document.createElement('h4');
         title.textContent = card.place || 'Unknown location';
+        title.title = card.place || 'Unknown location';
 
         const openBtn = document.createElement('button');
         openBtn.className = 'open-btn';
         openBtn.innerHTML = '<iconify-icon icon="mdi:map-marker" aria-hidden="true"></iconify-icon> Open →';
-        openBtn.setAttribute('aria-label', `Open ${card.place} on Google Maps`);
+        openBtn.setAttribute('aria-label', `Open ${card.place || 'location'} on Google Maps`);
         openBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           openGoogleMaps(card.lat, card.lon);
@@ -520,77 +593,78 @@
       lettersContainer.appendChild(fragment);
     }
 
-    function validateInput(input) {
-      if (!input || input.trim().length === 0) {
-        return { valid: false, error: 'Please enter a name!' };
+    // Generate name from input
+    function generateName() {
+      if (isProcessing) return;
+      
+      if (!checkDatabase()) return;
+
+      const input = nameInput.value.trim();
+      
+      if (!input) {
+        showWarning('Please enter a name!');
+        return;
       }
 
-      const sanitized = input.trim().toLowerCase().replace(/[^a-z]/g, '');
+      // Allow only letters
+      const sanitized = input.toLowerCase().replace(/[^a-z]/g, '');
       
       if (sanitized.length === 0) {
-        return { valid: false, error: 'Please use only letters (A-Z).' };
+        showWarning('Please use only letters (A-Z) in your name.');
+        return;
       }
 
       if (sanitized.length > 15) {
-        return { valid: false, error: `Maximum 15 characters. You entered ${sanitized.length}.` };
-      }
-
-      return { valid: true, sanitized };
-    }
-
-    function generateName() {
-      if (isLoading) return;
-
-      clearWarning();
-
-      const validation = validateInput(nameInput.value);
-      
-      if (!validation.valid) {
-        showWarning(validation.error);
+        showWarning('Maximum 15 characters allowed.');
         return;
       }
 
-      if (!window.earthDatabase || typeof window.earthDatabase !== 'object') {
-        showWarning('Image database not available. Please check your connection and reload the page.');
-        return;
-      }
-
-      isLoading = true;
+      isProcessing = true;
       generateBtn.disabled = true;
-      currentNameRaw = validation.sanitized;
-      const cards = [];
-      let hasError = false;
 
-      for (let letter of validation.sanitized) {
-        const options = window.earthDatabase[letter];
-        if (!options || !Array.isArray(options) || options.length === 0) {
-          showWarning(`No Landsat images available for letter "${letter.toUpperCase()}". Try different letters.`);
-          hasError = true;
-          break;
-        }
-        
-        // Validate each option has required properties
-        const validOptions = options.filter(opt => opt && opt.img && opt.lat && opt.lon);
-        if (validOptions.length === 0) {
-          showWarning(`Invalid data for letter "${letter.toUpperCase()}".`);
-          hasError = true;
-          break;
-        }
-        
-        const randomIndex = Math.floor(Math.random() * validOptions.length);
-        cards.push({ ...validOptions[randomIndex] });
-      }
+      try {
+        const cards = [];
 
-      if (!hasError && cards.length === validation.sanitized.length) {
+        for (let letter of sanitized) {
+          const options = earthDatabase[letter];
+          
+          if (!options || !Array.isArray(options) || options.length === 0) {
+            showWarning(`No satellite images available for letter "${letter.toUpperCase()}".`);
+            isProcessing = false;
+            generateBtn.disabled = false;
+            return;
+          }
+
+          // Filter valid options
+          const validOptions = options.filter(opt => opt && opt.img);
+          
+          if (validOptions.length === 0) {
+            showWarning(`No valid images for letter "${letter.toUpperCase()}".`);
+            isProcessing = false;
+            generateBtn.disabled = false;
+            return;
+          }
+
+          // Pick random image
+          const randomIndex = Math.floor(Math.random() * validOptions.length);
+          cards.push({ ...validOptions[randomIndex] });
+        }
+
         currentCardsData = cards;
-        mainTitle.textContent = validation.sanitized.toUpperCase() + ' In Landsat';
-        renderCards(cards, validation.sanitized);
+        currentNameRaw = sanitized;
+        mainTitle.textContent = sanitized.toUpperCase() + ' In Landsat';
+        renderCards(cards, sanitized);
+        
+      } catch (error) {
+        console.error('Error generating name:', error);
+        showWarning('An error occurred. Please try again.');
+      } finally {
+        isProcessing = false;
+        generateBtn.disabled = false;
       }
-
-      isLoading = false;
-      generateBtn.disabled = false;
     }
 
+    // Download combined image
     async function downloadCombinedImage() {
       if (currentCardsData.length === 0) {
         showWarning('Generate a name first before downloading!');
@@ -604,7 +678,7 @@
       }
 
       downloadBtn.disabled = true;
-      downloadBtn.innerHTML = '<iconify-icon icon="mdi:loading" class="spinner" aria-hidden="true"></iconify-icon> Preparing...';
+      downloadBtn.innerHTML = '<iconify-icon icon="mdi:loading" aria-hidden="true"></iconify-icon> Preparing...';
 
       try {
         const firstCard = cards[0];
@@ -615,70 +689,83 @@
           throw new Error('Cannot determine image dimensions');
         }
 
+        // Create canvas
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        // Set canvas size with device pixel ratio for better quality
+        // Higher quality with device pixel ratio
         const scale = 2;
         canvas.width = width * cards.length * scale;
         canvas.height = height * scale;
         ctx.scale(scale, scale);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width * cards.length, height);
 
-        const loadImage = (src) => {
-          return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            
-            img.onload = () => resolve(img);
-            img.onerror = () => {
-              // Try without CORS as fallback
-              const fallbackImg = new Image();
-              fallbackImg.onload = () => resolve(fallbackImg);
-              fallbackImg.onerror = () => reject(new Error('Failed to load image: ' + src));
-              fallbackImg.src = src;
-            };
-            
-            img.src = src;
-          });
-        };
-
+        // Load and draw each image
         for (let index = 0; index < cards.length; index++) {
           const imgElement = cards[index].querySelector('img');
-          if (!imgElement) continue;
+          if (!imgElement || !imgElement.src) continue;
           
           try {
-            const img = await loadImage(imgElement.src);
-            ctx.drawImage(img, index * width, 0, width, height);
+            await new Promise((resolve, reject) => {
+              const img = new Image();
+              img.crossOrigin = 'anonymous';
+              
+              const timeout = setTimeout(() => {
+                reject(new Error('Image load timeout'));
+              }, 5000);
+              
+              img.onload = () => {
+                clearTimeout(timeout);
+                ctx.drawImage(img, index * width, 0, width, height);
+                resolve();
+              };
+              
+              img.onerror = () => {
+                clearTimeout(timeout);
+                // Draw placeholder on error
+                ctx.fillStyle = '#e0e0e0';
+                ctx.fillRect(index * width, 0, width, height);
+                ctx.fillStyle = '#999999';
+                ctx.font = '14px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Image unavailable', index * width + width/2, height/2);
+                resolve(); // Continue despite error
+              };
+              
+              img.src = imgElement.src;
+            });
           } catch (err) {
-            console.warn('Failed to load image for download:', err);
+            console.warn('Failed to load image:', err);
             // Draw placeholder
-            ctx.fillStyle = '#ddd';
+            ctx.fillStyle = '#e0e0e0';
             ctx.fillRect(index * width, 0, width, height);
-            ctx.fillStyle = '#999';
-            ctx.font = '14px Arial';
+            ctx.fillStyle = '#999999';
+            ctx.font = '14px Arial, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('Image unavailable', index * width + width/2, height/2);
           }
         }
 
-        const blob = await new Promise(resolve => {
-          canvas.toBlob(resolve, 'image/png', 1.0);
-        });
+        // Convert to blob and download
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const name = currentNameRaw || 'landsat';
+            const timestamp = new Date().toISOString().slice(0, 10);
+            link.download = `${name}_landsat_${timestamp}.png`;
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+          } else {
+            showWarning('Failed to create image. Please try again.');
+          }
+        }, 'image/png', 1.0);
 
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          const name = currentNameRaw || 'landsat';
-          const timestamp = new Date().toISOString().slice(0, 10);
-          link.download = `${name}_landsat_${timestamp}.png`;
-          link.href = url;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          
-          // Clean up blob URL after a short delay
-          setTimeout(() => URL.revokeObjectURL(url), 100);
-        }
       } catch (error) {
         console.error('Download failed:', error);
         showWarning('Failed to download images. Please try again.');
@@ -688,41 +775,26 @@
       }
     }
 
-    function togglePopup() {
-      const isVisible = popup.style.display === 'block';
-      popup.style.display = isVisible ? 'none' : 'block';
-      popup.setAttribute('aria-hidden', isVisible);
-      
-      if (!isVisible) {
-        closePopup.focus();
-      }
+    // Toggle popup
+    function openPopup() {
+      popup.classList.add('active');
+      popup.setAttribute('aria-hidden', 'false');
+      closePopup.focus();
     }
 
-    // Close popup when clicking outside
-    document.addEventListener('click', (e) => {
-      if (popup.style.display === 'block' && 
-          !popup.contains(e.target) && 
-          e.target !== helpBtn &&
-          !helpBtn.contains(e.target)) {
-        popup.style.display = 'none';
-        popup.setAttribute('aria-hidden', 'true');
-      }
-    });
-
-    // Close popup with Escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && popup.style.display === 'block') {
-        popup.style.display = 'none';
-        popup.setAttribute('aria-hidden', 'true');
-        helpBtn.focus();
-      }
-    });
+    function closePopupFn() {
+      popup.classList.remove('active');
+      popup.setAttribute('aria-hidden', 'true');
+    }
 
     // Event listeners
     generateBtn.addEventListener('click', generateName);
+    
     downloadBtn.addEventListener('click', downloadCombinedImage);
-    helpBtn.addEventListener('click', togglePopup);
-    closePopup.addEventListener('click', togglePopup);
+    
+    helpBtn.addEventListener('click', openPopup);
+    
+    closePopup.addEventListener('click', closePopupFn);
     
     nameInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
@@ -731,52 +803,63 @@
       }
     });
 
-    // Input sanitization
-    nameInput.addEventListener('input', (e) => {
-      // Remove non-letter characters (but allow typing for user experience)
-      const cursorPosition = e.target.selectionStart;
-      const originalValue = e.target.value;
-      const sanitized = originalValue.replace(/[^a-zA-Z\s]/g, '');
+    // Filter non-letter characters on input
+    nameInput.addEventListener('input', function(e) {
+      const cursorPos = this.selectionStart;
+      const oldValue = this.value;
+      const newValue = oldValue.replace(/[^a-zA-Z\s]/g, '');
       
-      if (originalValue !== sanitized) {
-        e.target.value = sanitized;
-        // Restore cursor position
-        const newPosition = cursorPosition - (originalValue.length - sanitized.length);
-        e.target.setSelectionRange(Math.max(0, newPosition), Math.max(0, newPosition));
+      if (oldValue !== newValue) {
+        this.value = newValue;
+        const posDiff = oldValue.length - newValue.length;
+        this.setSelectionRange(cursorPos - posDiff, cursorPos - posDiff);
       }
     });
 
-    // Initialize with default if database is available
-    function initializeApp() {
-      if (window.earthDatabase && typeof window.earthDatabase === 'object') {
+    // Close popup when clicking outside
+    document.addEventListener('click', function(e) {
+      if (popup.classList.contains('active') && 
+          !popup.contains(e.target) && 
+          e.target !== helpBtn &&
+          !helpBtn.contains(e.target)) {
+        closePopupFn();
+      }
+    });
+
+    // Close popup with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && popup.classList.contains('active')) {
+        closePopupFn();
+        helpBtn.focus();
+      }
+    });
+
+    // Initialize application
+    function init() {
+      if (checkDatabase()) {
         nameInput.value = 'LANDSAT';
-        generateName();
+        // Small delay to ensure everything is ready
+        setTimeout(() => {
+          generateName();
+        }, 100);
       } else {
-        // Show message about missing database
-        emptyState.innerHTML = '<iconify-icon icon="mdi:database-off" aria-hidden="true"></iconify-icon><p>Image database not loaded. Please create info.js file.</p>';
         emptyState.style.display = 'flex';
-        
-        // Keep checking for database
-        const checkInterval = setInterval(() => {
-          if (window.earthDatabase) {
-            clearInterval(checkInterval);
-            nameInput.value = 'LANDSAT';
-            generateName();
-          }
-        }, 500);
-        
-        // Stop checking after 10 seconds
-        setTimeout(() => clearInterval(checkInterval), 10000);
       }
     }
 
-    // Check if DOM is already loaded
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeApp);
-    } else {
-      initializeApp();
-    }
-  })();
+    // Start the app
+    init();
+  }
+
+  // Start when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  } else {
+    initializeApp();
+  }
+
+})();
 </script>
+
 </body>
 </html>
