@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="description" content="Type your name and see it spelled out in stunning Landsat satellite imagery. Explore Earth from space, letter by letter, with NASA and USGS Landsat images." />
   <title>Your Name In Landsat 🛰️</title>
-  
-  <!-- Favicon fix - using inline SVG data URI to avoid 404 -->
+
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>" />
 
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
@@ -26,12 +25,14 @@
       overflow-x: hidden;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* ===== DARK HEADER ONLY ===== */
+    /* ===== DARK HEADER ===== */
     header {
       width: 100%;
-      min-height: 80px;
+      min-height: 70px;
       background: #0a0a0a;
       color: white;
       display: flex;
@@ -40,52 +41,56 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      padding: 12px 20px;
+      padding: 10px 16px;
       border-bottom: 1px solid #222;
       box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+      flex-shrink: 0;
     }
 
     .logo {
       position: absolute;
-      left: 20px;
+      left: 16px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .logo-circle {
-      width: 48px;
-      height: 48px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: linear-gradient(135deg, #0a43ff, #2dc7ff);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 16px;
       color: white;
       flex-shrink: 0;
     }
 
     .logo span {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       white-space: nowrap;
     }
 
     .title {
-      font-size: clamp(22px, 4vw, 42px);
+      font-size: clamp(18px, 3.5vw, 36px);
       font-weight: 800;
       text-align: center;
-      padding: 0 80px;
+      padding: 0 60px;
       color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .help-btn {
       position: absolute;
-      right: 20px;
-      width: 44px;
-      height: 44px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       border: 2px solid rgba(255, 255, 255, 0.7);
       display: flex;
@@ -95,7 +100,6 @@
       transition: all 0.3s;
       background: transparent;
       color: white;
-      font-size: 24px;
     }
 
     .help-btn:hover {
@@ -104,7 +108,7 @@
     }
 
     .help-btn iconify-icon {
-      font-size: 26px;
+      font-size: 22px;
     }
 
     /* ===== POPUP OVERLAYS ===== */
@@ -188,11 +192,11 @@
     }
 
     #qrImg {
-      max-width: 220px;
+      max-width: 200px;
       margin: 12px auto;
       display: block;
       background: white;
-      padding: 10px;
+      padding: 8px;
       border-radius: 8px;
       border: 1px solid #eee;
     }
@@ -233,44 +237,53 @@
       border-color: #ccc;
     }
 
-    /* ===== MAIN CONTENT ===== */
-    .main {
-      max-width: 1500px;
-      margin: auto;
-      padding: 24px 16px 160px;
+    /* ===== SCROLLABLE LETTERS CONTAINER ===== */
+    .letters-scroll {
+      flex: 1;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 20px 12px 20px;
+      display: flex;
+      align-items: center;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
     }
 
     .letters {
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 16px;
-      padding-bottom: 20px;
+      flex-wrap: nowrap;
+      gap: clamp(4px, 0.8vw, 8px);
+      margin: 0 auto;
+      height: fit-content;
+      align-items: center;
     }
 
-    /* ===== LETTER CARDS - LIGHT THEME ===== */
+    /* ===== PORTRAIT CARDS (like YouTube Shorts) ===== */
     .letter-card {
-      width: clamp(200px, 22vw, 280px);
+      flex: 0 0 auto;
+      /* Portrait aspect ratio 9:16 */
+      width: clamp(100px, 16vw, 180px);
       background: #fff;
-      border-radius: 12px;
+      border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-      transition: transform 0.25s, box-shadow 0.25s;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
       position: relative;
       border: 1px solid #e8e8e8;
     }
 
     .letter-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
 
     .image-wrapper {
       position: relative;
       overflow: hidden;
-      aspect-ratio: 1 / 1;
+      width: 100%;
+      aspect-ratio: 9 / 16;
       background: #ddd;
     }
 
@@ -279,68 +292,72 @@
       height: 100%;
       object-fit: cover;
       display: block;
-      transition: transform 0.4s ease;
+      transition: transform 0.3s ease;
     }
 
     .letter-card:hover img {
-      transform: scale(1.06);
+      transform: scale(1.04);
     }
 
-    /* Location name overlay - bottom-left corner */
+    /* Location label in bottom-left corner */
     .location-label {
       position: absolute;
       bottom: 0;
       left: 0;
-      padding: 8px 14px;
-      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 70%, transparent 100%);
+      padding: 6px 10px;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
       color: white;
-      font-size: 0.8rem;
+      font-size: clamp(0.55rem, 1vw, 0.7rem);
       font-weight: 500;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.2px;
       pointer-events: none;
       width: 100%;
       text-align: left;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* ===== FLOATING CONTROLS - LIGHT THEME ===== */
+    /* ===== FLOATING CONTROLS ===== */
     .controls-wrapper {
-      position: fixed;
+      position: sticky;
       bottom: 0;
       left: 0;
       right: 0;
       z-index: 90;
-      padding: 16px;
-      background: linear-gradient(to top, rgba(240,240,245,0.98) 60%, rgba(240,240,245,0.9) 80%, transparent 100%);
+      padding: 12px 12px 16px;
+      background: linear-gradient(to top, rgba(240,240,245,0.99) 60%, rgba(240,240,245,0.9) 80%, transparent 100%);
+      flex-shrink: 0;
     }
 
     .controls {
-      max-width: 700px;
+      max-width: 650px;
       margin: 0 auto;
     }
 
     .input-wrap {
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       background: #fff;
-      padding: 10px 14px;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 8px 10px;
+      border-radius: 14px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
       border: 1px solid #e0e0e0;
     }
 
     input {
       flex: 1;
-      min-width: 180px;
-      height: 52px;
+      min-width: 0;
+      height: 46px;
       border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 0 16px;
-      font-size: 18px;
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 16px;
       outline: none;
       background: #fafafa;
       color: #1a1a1a;
@@ -349,7 +366,7 @@
 
     input:focus {
       border-color: #2dc7ff;
-      box-shadow: 0 0 0 3px rgba(45, 199, 255, 0.1);
+      box-shadow: 0 0 0 3px rgba(45, 199, 255, 0.08);
       background: #fff;
     }
 
@@ -358,20 +375,21 @@
     }
 
     button {
-      height: 52px;
+      height: 46px;
       border: none;
-      border-radius: 12px;
-      padding: 0 20px;
+      border-radius: 10px;
+      padding: 0 16px;
       cursor: pointer;
       background: #111;
       color: #fff;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       transition: all 0.2s;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     button:hover {
@@ -379,12 +397,12 @@
     }
 
     .icon-btn {
-      width: 52px;
-      height: 52px;
+      width: 46px;
+      height: 46px;
       padding: 0;
       background: #f0f0f0;
       color: #444;
-      border-radius: 12px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -402,32 +420,38 @@
     }
 
     .icon-btn iconify-icon {
-      font-size: 22px;
+      font-size: 20px;
     }
 
     .warning {
       background: #fff3cd;
       border-left: 4px solid #ff8800;
-      padding: 10px 16px;
-      margin: 10px auto 0;
+      padding: 8px 14px;
+      margin: 8px auto 0;
       border-radius: 8px;
       color: #856404;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       text-align: center;
-      max-width: 500px;
+      max-width: 450px;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
       header {
-        min-height: 64px;
-        padding: 10px 12px;
+        min-height: 56px;
+        padding: 8px 10px;
       }
 
       .logo-circle {
-        width: 38px;
-        height: 38px;
-        font-size: 14px;
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
       }
 
       .logo span {
@@ -435,77 +459,83 @@
       }
 
       .title {
-        font-size: 20px;
-        padding: 0 60px;
+        font-size: 16px;
+        padding: 0 50px;
       }
 
       .help-btn {
-        width: 38px;
-        height: 38px;
-        right: 12px;
+        width: 34px;
+        height: 34px;
+        right: 10px;
       }
 
       .help-btn iconify-icon {
-        font-size: 22px;
+        font-size: 18px;
       }
 
       .letter-card {
-        width: clamp(150px, 40vw, 200px);
+        width: clamp(85px, 22vw, 130px);
+        border-radius: 8px;
       }
 
       .location-label {
-        font-size: 0.7rem;
-        padding: 6px 10px;
+        font-size: 0.6rem;
+        padding: 4px 8px;
       }
 
-      .main {
-        padding: 16px 10px 150px;
-      }
-
-      .letters {
-        gap: 10px;
+      .letters-scroll {
+        padding: 12px 8px 12px;
       }
 
       input {
-        font-size: 16px;
-        height: 46px;
-        min-width: 140px;
-      }
-
-      button {
-        height: 46px;
+        height: 40px;
         font-size: 14px;
-        padding: 0 14px;
-      }
-
-      .icon-btn {
-        width: 46px;
-        height: 46px;
-      }
-
-      .controls-wrapper {
-        padding: 10px;
-      }
-
-      .input-wrap {
-        padding: 8px 10px;
-        gap: 8px;
-      }
-    }
-
-    @media (max-width: 400px) {
-      .letter-card {
-        width: 44vw;
-      }
-
-      .location-label {
-        font-size: 0.65rem;
       }
 
       button {
+        height: 40px;
         font-size: 13px;
         padding: 0 10px;
       }
+
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+      }
+
+      .icon-btn iconify-icon {
+        font-size: 18px;
+      }
+
+      .input-wrap {
+        padding: 6px 8px;
+        gap: 6px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .letter-card {
+        width: clamp(70px, 24vw, 95px);
+      }
+
+      .location-label {
+        font-size: 0.5rem;
+      }
+
+      button {
+        font-size: 12px;
+        padding: 0 8px;
+      }
+    }
+
+    /* Smooth loading for images */
+    .letter-card img {
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .letter-card img.loaded {
+      opacity: 1;
     }
   </style>
 </head>
@@ -557,16 +587,16 @@
   </div>
 </div>
 
-<!-- ===== MAIN CONTENT ===== -->
-<section class="main">
+<!-- ===== SCROLLABLE LETTERS ===== -->
+<div class="letters-scroll" id="lettersScroll">
   <div class="letters" id="lettersContainer"></div>
-</section>
+</div>
 
 <!-- ===== FLOATING CONTROLS ===== -->
 <div class="controls-wrapper">
   <div class="controls">
     <div class="input-wrap">
-      <input type="text" id="nameInput" placeholder="Enter a name" maxlength="25" autocomplete="off" value="LANDSAT" />
+      <input type="text" id="nameInput" placeholder="Enter a name (max 15)" maxlength="15" autocomplete="off" value="LANDSAT" />
       <button id="generateBtn">
         <iconify-icon icon="mdi:keyboard-return"></iconify-icon>
         Enter
@@ -578,7 +608,7 @@
         <iconify-icon icon="mdi:qrcode"></iconify-icon>
       </a>
     </div>
-    <div id="warningMsg" style="margin-top: 8px;"></div>
+    <div id="warningMsg" style="margin-top: 6px;"></div>
   </div>
 </div>
 
@@ -586,7 +616,7 @@
 (function() {
   'use strict';
 
-  // ===== IMAGE DATABASE - Images stored in "Images/" folder =====
+  // ===== IMAGE DATABASE =====
   const earthDatabase = {
     'a': [
       { file: 'a.png', location: 'Lake Guakhmaz, Azerbaijan', lat: 40.664111, lon: 47.110056, coords_dms: "40°39'50.8\" N 47°06'36.2\" E" },
@@ -702,38 +732,39 @@
     ]
   };
 
-  // Helper: get image path from Images/ folder
+  // Image path helper
   function getImageUrl(fileName) {
     return 'Images/' + fileName;
   }
 
   // ===== DOM ELEMENTS =====
-  const nameInput = document.getElementById('nameInput');
-  const generateBtn = document.getElementById('generateBtn');
-  const downloadBtn = document.getElementById('downloadBtn');
-  const qrCodeBtn = document.getElementById('qrCodeBtn');
-  const helpBtn = document.getElementById('helpBtn');
-  const lettersContainer = document.getElementById('lettersContainer');
-  const mainTitle = document.getElementById('mainTitle');
-  const warningMsg = document.getElementById('warningMsg');
-  const helpOverlay = document.getElementById('helpOverlay');
-  const closeHelpPopup = document.getElementById('closeHelpPopup');
-  const qrOverlay = document.getElementById('qrOverlay');
-  const closeQrPopup = document.getElementById('closeQrPopup');
-  const qrImg = document.getElementById('qrImg');
-  const finalImg = document.getElementById('finalImg');
-  const copyLinkBtn = document.getElementById('copyLinkBtn');
-  const copyLinkText = document.getElementById('copyLinkText');
+  const $ = (id) => document.getElementById(id);
+  const nameInput = $('nameInput');
+  const generateBtn = $('generateBtn');
+  const downloadBtn = $('downloadBtn');
+  const qrCodeBtn = $('qrCodeBtn');
+  const helpBtn = $('helpBtn');
+  const lettersContainer = $('lettersContainer');
+  const lettersScroll = $('lettersScroll');
+  const mainTitle = $('mainTitle');
+  const warningMsg = $('warningMsg');
+  const helpOverlay = $('helpOverlay');
+  const closeHelpPopup = $('closeHelpPopup');
+  const qrOverlay = $('qrOverlay');
+  const closeQrPopup = $('closeQrPopup');
+  const qrImg = $('qrImg');
+  const finalImg = $('finalImg');
+  const copyLinkBtn = $('copyLinkBtn');
+  const copyLinkText = $('copyLinkText');
 
   let currentCardsData = [];
   let currentNameRaw = '';
+  let warningTimer = null;
 
   function showWarning(msg) {
+    if (warningTimer) clearTimeout(warningTimer);
     warningMsg.innerHTML = `<div class="warning">⚠️ ${msg}</div>`;
-    clearTimeout(window._warnTimeout);
-    window._warnTimeout = setTimeout(() => {
-      warningMsg.innerHTML = '';
-    }, 3500);
+    warningTimer = setTimeout(() => { warningMsg.innerHTML = ''; }, 3000);
   }
 
   function openGoogleMaps(lat, lon) {
@@ -742,7 +773,6 @@
 
   function renderCards(cardsArray, nameString) {
     lettersContainer.innerHTML = '';
-
     if (!cardsArray || cardsArray.length === 0) return;
 
     const fragment = document.createDocumentFragment();
@@ -750,32 +780,44 @@
     cardsArray.forEach((card, idx) => {
       const cardDiv = document.createElement('div');
       cardDiv.className = 'letter-card';
-      cardDiv.onclick = () => openGoogleMaps(card.lat, card.lon);
+      cardDiv.addEventListener('click', () => openGoogleMaps(card.lat, card.lon));
 
       const imageWrapper = document.createElement('div');
       imageWrapper.className = 'image-wrapper';
 
       const img = document.createElement('img');
       img.src = card.img;
-      img.alt = `Landsat image: ${card.place}`;
-      img.loading = 'lazy';
-      
-      // Better error handling for missing images
+      img.alt = `Landsat: ${card.place}`;
+      img.loading = 'eager'; // Load immediately for visible cards
+
+      // Faster loading: add loaded class when image is ready
+      img.onload = function() {
+        this.classList.add('loaded');
+      };
+
+      // Fallback for missing images
       img.onerror = function() {
-        const colors = ['#1a5276', '#1e8449', '#7d6608', '#6c3483', '#922b21'];
+        const colors = ['#1a5276', '#1e8449', '#7d6608', '#6c3483', '#922b21', '#0e6655'];
         const color = colors[idx % colors.length];
         const letter = (nameString[idx] || '').toUpperCase();
-        this.src = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><rect fill="${color}" width="280" height="280"/><text fill="white" font-family="Arial" font-size="40" text-anchor="middle" x="140" y="120" font-weight="bold">${letter}</text><text fill="rgba(255,255,255,0.8)" font-family="Arial" font-size="14" text-anchor="middle" x="140" y="150">${card.place}</text><text fill="rgba(255,255,255,0.5)" font-family="Arial" font-size="11" text-anchor="middle" x="140" y="170">Image in Images/ folder</text></svg>`)}`;
+        this.src = `data:image/svg+xml,${encodeURIComponent(
+          `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="356"><rect fill="${color}" width="200" height="356"/><text fill="white" font-family="Arial" font-size="36" text-anchor="middle" x="100" y="140" font-weight="bold">${letter}</text><text fill="rgba(255,255,255,0.8)" font-family="Arial" font-size="11" text-anchor="middle" x="100" y="165">${card.place}</text><text fill="rgba(255,255,255,0.5)" font-family="Arial" font-size="9" text-anchor="middle" x="100" y="182">Add to Images/</text></svg>`
+        )}`;
+        this.classList.add('loaded');
       };
+
+      // If image is cached and loads instantly
+      if (img.complete && img.naturalWidth > 0) {
+        img.classList.add('loaded');
+      }
 
       imageWrapper.appendChild(img);
 
-      // Location label in bottom-left corner
       const locationLabel = document.createElement('div');
       locationLabel.className = 'location-label';
       locationLabel.textContent = card.place;
-
       imageWrapper.appendChild(locationLabel);
+
       cardDiv.appendChild(imageWrapper);
       fragment.appendChild(cardDiv);
     });
@@ -785,22 +827,19 @@
 
   function generateName() {
     let input = nameInput.value.trim().toLowerCase();
-
     if (!input) {
       showWarning('Please enter a name!');
       return;
     }
 
-    // Filter to letters only
     input = input.replace(/[^a-z]/g, '');
-
     if (!input) {
       showWarning('Please enter letters from A-Z');
       return;
     }
 
-    if (input.length > 25) {
-      showWarning('Maximum 25 characters allowed.');
+    if (input.length > 15) {
+      showWarning('Maximum 15 characters allowed.');
       return;
     }
 
@@ -826,12 +865,10 @@
 
     currentCardsData = cards;
     mainTitle.textContent = input.toUpperCase() + ' In Landsat';
-    // Update URL with word parameter
     updateUrlParam(input.toUpperCase());
     renderCards(cards, input);
   }
 
-  // Update URL query parameter ?word=LANDSAT
   function updateUrlParam(word) {
     if (window.history && window.history.replaceState) {
       const url = new URL(window.location);
@@ -840,7 +877,6 @@
     }
   }
 
-  // Read word from URL on load
   function getWordFromUrl() {
     const url = new URL(window.location);
     return url.searchParams.get('word') || null;
@@ -848,7 +884,6 @@
 
   async function downloadCombinedImage() {
     const cards = document.querySelectorAll('.letter-card');
-
     if (cards.length === 0) {
       showWarning('Generate a name first!');
       return;
@@ -857,7 +892,6 @@
     const firstCard = cards[0];
     const width = firstCard.offsetWidth;
     const height = firstCard.offsetHeight;
-
     if (width === 0 || height === 0) {
       showWarning('Cannot read card dimensions. Try again.');
       return;
@@ -866,7 +900,6 @@
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const scale = 2;
-
     canvas.width = width * cards.length * scale;
     canvas.height = height * scale;
     ctx.scale(scale, scale);
@@ -874,28 +907,14 @@
     ctx.fillRect(0, 0, width * cards.length, height);
 
     let loadedCount = 0;
-
     for (let index = 0; index < cards.length; index++) {
       const img = cards[index].querySelector('img');
       if (!img) { loadedCount++; continue; }
-
       await new Promise((resolve) => {
         const tempImg = new Image();
         tempImg.crossOrigin = 'Anonymous';
-
-        tempImg.onload = () => {
-          ctx.drawImage(tempImg, index * width, 0, width, height);
-          loadedCount++;
-          resolve();
-        };
-
-        tempImg.onerror = () => {
-          ctx.fillStyle = '#e0e0e0';
-          ctx.fillRect(index * width, 0, width, height);
-          loadedCount++;
-          resolve();
-        };
-
+        tempImg.onload = () => { ctx.drawImage(tempImg, index * width, 0, width, height); loadedCount++; resolve(); };
+        tempImg.onerror = () => { ctx.fillStyle = '#e0e0e0'; ctx.fillRect(index * width, 0, width, height); loadedCount++; resolve(); };
         tempImg.src = img.src;
       });
     }
@@ -924,9 +943,7 @@
     }
   }
 
-  // Generate QR code using goQR.me API
   function generateQrCode() {
-    // Generate composite image using html2canvas
     html2canvas(lettersContainer, {
       backgroundColor: '#f0f0f5',
       scale: 2,
@@ -935,17 +952,14 @@
     }).then(canvas => {
       finalImg.src = canvas.toDataURL('image/png');
       finalImg.style.display = 'block';
-
-      // Use goQR.me API to generate QR code
       const qrText = window.location.href;
       const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrText)}`;
       qrImg.src = qrApiUrl;
       qrImg.onerror = function() {
-        // Fallback if API fails
         this.src = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect fill="#f0f0f0" width="200" height="200"/><text fill="#999" font-family="Arial" font-size="14" text-anchor="middle" x="100" y="100">QR unavailable</text></svg>')}`;
       };
     }).catch(err => {
-      console.error('QR generation error:', err);
+      console.error('QR error:', err);
       showWarning('Could not generate QR code.');
     });
   }
@@ -955,11 +969,8 @@
     try {
       await navigator.clipboard.writeText(shareUrl);
       copyLinkText.textContent = 'Copied!';
-      setTimeout(() => {
-        copyLinkText.textContent = 'Copy Link';
-      }, 2000);
+      setTimeout(() => { copyLinkText.textContent = 'Copy Link'; }, 2000);
     } catch (err) {
-      // Fallback
       const input = document.createElement('input');
       input.value = shareUrl;
       document.body.appendChild(input);
@@ -967,9 +978,7 @@
       document.execCommand('copy');
       document.body.removeChild(input);
       copyLinkText.textContent = 'Copied!';
-      setTimeout(() => {
-        copyLinkText.textContent = 'Copy Link';
-      }, 2000);
+      setTimeout(() => { copyLinkText.textContent = 'Copy Link'; }, 2000);
     }
   }
 
@@ -982,15 +991,9 @@
   closeQrPopup.addEventListener('click', toggleQr);
   copyLinkBtn.addEventListener('click', copyShareLink);
 
-  // Close overlays on background click
-  helpOverlay.addEventListener('click', function(e) {
-    if (e.target === helpOverlay) toggleHelp();
-  });
-  qrOverlay.addEventListener('click', function(e) {
-    if (e.target === qrOverlay) toggleQr();
-  });
+  helpOverlay.addEventListener('click', function(e) { if (e.target === helpOverlay) toggleHelp(); });
+  qrOverlay.addEventListener('click', function(e) { if (e.target === qrOverlay) toggleQr(); });
 
-  // Close overlays with Escape key
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       if (qrOverlay.classList.contains('active')) toggleQr();
@@ -1002,7 +1005,6 @@
     if (e.key === 'Enter') generateName();
   });
 
-  // Filter input to letters only
   nameInput.addEventListener('input', function() {
     const cursorPos = this.selectionStart;
     const oldValue = this.value;
@@ -1012,23 +1014,22 @@
       const diff = oldValue.length - newValue.length;
       this.setSelectionRange(cursorPos - diff, cursorPos - diff);
     }
+    // Enforce 15 char limit visually
+    if (this.value.length > 15) {
+      this.value = this.value.slice(0, 15);
+    }
   });
 
   // ===== INITIALIZE =====
   function init() {
-    // Check if word parameter exists in URL
     const wordFromUrl = getWordFromUrl();
-    
     if (wordFromUrl) {
-      nameInput.value = wordFromUrl;
+      nameInput.value = wordFromUrl.slice(0, 15);
     } else {
       nameInput.value = 'LANDSAT';
     }
-    
-    // Small delay to let DOM render
-    setTimeout(() => {
-      generateName();
-    }, 200);
+    // Slight delay to let DOM settle
+    setTimeout(generateName, 100);
   }
 
   if (document.readyState === 'loading') {
