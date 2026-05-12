@@ -2,28 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Name In Landsat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Type your name and see it spelled out in stunning Landsat satellite imagery. Explore Earth from space, letter by letter, with NASA and USGS Landsat images." />
+  <title>Your Name In Landsat 🛰️</title>
 
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Inter', Arial, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
     }
 
     body {
-      background: #ececec;
-      color: #111;
+      background: #1a1a1a;
+      color: #fff;
       overflow-x: hidden;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
+    /* ===== BLACK HEADER ===== */
     header {
       width: 100%;
-      min-height: 100px;
+      min-height: 80px;
       background: #000;
       color: white;
       display: flex;
@@ -31,8 +37,9 @@
       justify-content: center;
       position: sticky;
       top: 0;
-      z-index: 999;
-      padding: 15px;
+      z-index: 100;
+      padding: 12px 20px;
+      border-bottom: 1px solid #222;
     }
 
     .logo {
@@ -40,200 +47,265 @@
       left: 20px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .logo-circle {
-      width: 58px;
-      height: 58px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background: linear-gradient(135deg, #0a43ff, #2dc7ff);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 20px;
+      font-size: 18px;
       color: white;
+      flex-shrink: 0;
     }
 
     .logo span {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
+      white-space: nowrap;
     }
 
     .title {
-      font-size: 52px;
+      font-size: clamp(22px, 4vw, 42px);
       font-weight: 800;
       text-align: center;
+      padding: 0 80px;
     }
 
     .help-btn {
       position: absolute;
       right: 20px;
-      width: 50px;
-      height: 50px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      border: 2px solid white;
-      background: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.7);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s;
+      background: transparent;
       color: white;
     }
 
     .help-btn:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: white;
     }
 
     .help-btn iconify-icon {
-      font-size: 30px;
+      font-size: 26px;
+    }
+
+    /* ===== POPUPS ===== */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .popup-overlay.active {
+      display: flex;
     }
 
     .popup {
-      position: fixed;
-      top: 110px;
-      right: 20px;
-      width: 340px;
-      background: white;
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      display: none;
-      z-index: 9999;
-    }
-
-    .popup.active {
-      display: block;
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 440px;
+      width: 90%;
+      color: #fff;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      border: 1px solid #333;
     }
 
     .popup h3 {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
     }
 
     .popup p {
       line-height: 1.7;
-      color: #333;
-      margin-bottom: 15px;
+      color: #ccc;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
     }
 
     .popup a {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: black;
-      color: white;
-      padding: 12px 15px;
-      border-radius: 12px;
+      background: #fff;
+      color: #000;
+      padding: 10px 16px;
+      border-radius: 10px;
       text-decoration: none;
       font-weight: 700;
+      font-size: 0.9rem;
       transition: background 0.2s;
     }
 
     .popup a:hover {
-      background: #333;
+      background: #e0e0e0;
     }
 
+    .popup-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #999;
+      padding: 4px 8px;
+      transition: color 0.2s;
+    }
+
+    .popup-close:hover {
+      color: #fff;
+    }
+
+    #qrImg {
+      max-width: 200px;
+      margin: 12px auto;
+      display: block;
+      background: white;
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    #finalImg {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .qr-description {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .copy-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .copy-link-btn:hover {
+      background: #444;
+    }
+
+    /* ===== MAIN CONTENT ===== */
     .main {
       max-width: 1500px;
       margin: auto;
-      padding: 40px 20px 80px;
+      padding: 24px 16px 160px;
     }
 
     .letters {
       display: flex;
       flex-direction: row;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      gap: 14px;
-      margin-bottom: 50px;
-      padding-bottom: 10px;
-      justify-content: flex-start;
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
-      min-height: 300px;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      padding-bottom: 20px;
     }
 
+    /* ===== LARGE LETTER CARDS ===== */
     .letter-card {
-      flex: 0 0 auto;
-      width: 170px;
-      background: #999;
-      border-radius: 8px;
+      width: clamp(200px, 22vw, 280px);
+      background: #2a2a2a;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+      position: relative;
     }
 
     .letter-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
     }
 
     .image-wrapper {
       position: relative;
-      cursor: pointer;
       overflow: hidden;
-      background: #ddd;
+      aspect-ratio: 1 / 1;
+      background: #333;
     }
 
     .letter-card img {
       width: 100%;
-      aspect-ratio: 1 / 1;
+      height: 100%;
       object-fit: cover;
       display: block;
-      transition: transform 0.3s;
+      transition: transform 0.4s ease;
     }
 
     .letter-card:hover img {
-      transform: scale(1.05);
+      transform: scale(1.06);
     }
 
-    .location-tag {
-      padding: 12px;
-      background: rgba(0, 0, 0, 0.85);
+    /* Location name overlay in bottom-left corner */
+    .location-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      padding: 8px 14px;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 80%, transparent 100%);
       color: white;
-    }
-
-    .location-tag h4 {
-      font-size: 13px;
-      margin-bottom: 8px;
+      font-size: 0.8rem;
       font-weight: 500;
-      line-height: 1.3;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .open-btn {
+      letter-spacing: 0.3px;
+      pointer-events: none;
       width: 100%;
-      background: #1e5fff;
-      border: none;
-      padding: 8px;
-      border-radius: 6px;
-      color: white;
-      font-weight: 600;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: background 0.2s;
+      text-align: left;
     }
 
-    .open-btn:hover {
-      background: #0a43ff;
+    /* ===== FLOATING CONTROLS ===== */
+    .controls-wrapper {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 90;
+      padding: 16px;
+      background: linear-gradient(to top, #1a1a1a 60%, rgba(26,26,26,0.95) 80%, transparent 100%);
     }
 
     .controls {
-      text-align: center;
-    }
-
-    .controls p {
-      font-size: 26px;
-      margin-bottom: 20px;
-      font-weight: 500;
+      max-width: 700px;
+      margin: 0 auto;
     }
 
     .input-wrap {
@@ -243,621 +315,727 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      background: white;
-      padding: 12px;
-      border-radius: 18px;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+      background: #2a2a2a;
+      padding: 10px 14px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      border: 1px solid #333;
     }
 
     input {
-      width: 320px;
-      height: 58px;
-      border: 1px solid #ddd;
+      flex: 1;
+      min-width: 180px;
+      height: 52px;
+      border: 1px solid #444;
       border-radius: 12px;
       padding: 0 16px;
-      font-size: 20px;
+      font-size: 18px;
       outline: none;
-      transition: border-color 0.3s;
+      background: #1a1a1a;
+      color: #fff;
+      transition: border-color 0.2s;
     }
 
     input:focus {
-      border-color: #1e5fff;
-      box-shadow: 0 0 0 3px rgba(30, 95, 255, 0.1);
+      border-color: #2dc7ff;
+    }
+
+    input::placeholder {
+      color: #777;
     }
 
     button {
-      height: 58px;
+      height: 52px;
       border: none;
       border-radius: 12px;
-      padding: 0 18px;
+      padding: 0 20px;
       cursor: pointer;
-      background: #111;
-      color: white;
-      font-size: 18px;
+      background: #fff;
+      color: #000;
+      font-size: 16px;
       font-weight: 700;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: background 0.2s;
+      transition: all 0.2s;
+      white-space: nowrap;
     }
 
     button:hover {
+      background: #e0e0e0;
+    }
+
+    .icon-btn {
+      width: 52px;
+      height: 52px;
+      padding: 0;
       background: #333;
+      color: #fff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      border: 1px solid #444;
+      flex-shrink: 0;
     }
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    .icon-btn:hover {
+      background: #444;
+      border-color: #666;
     }
 
-    button:focus-visible {
-      outline: 3px solid #1e5fff;
-      outline-offset: 2px;
+    .icon-btn iconify-icon {
+      font-size: 22px;
     }
 
     .warning {
-      background: #ffdd99;
-      border-left: 5px solid #ff8800;
-      padding: 12px 20px;
-      margin: 20px auto;
-      border-radius: 10px;
-      display: inline-block;
-      color: #333;
-    }
-
-    .empty-state {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 20px;
-      color: #666;
-      font-size: 18px;
+      background: #3a2a0a;
+      border-left: 4px solid #ff8800;
+      padding: 10px 16px;
+      margin: 10px auto 0;
+      border-radius: 8px;
+      color: #ffcc80;
+      font-size: 0.9rem;
       text-align: center;
+      max-width: 500px;
     }
 
-    .empty-state iconify-icon {
-      font-size: 64px;
-      margin-bottom: 16px;
-      color: #999;
-    }
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      header {
+        min-height: 64px;
+        padding: 10px 12px;
+      }
 
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
-    }
-
-    @media (max-width: 900px) {
-      .title {
-        font-size: 30px;
-        padding: 0 70px;
+      .logo-circle {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
       }
 
       .logo span {
         display: none;
       }
 
-      .letter-card {
-        width: 140px;
+      .title {
+        font-size: 20px;
+        padding: 0 60px;
       }
 
-      .controls p {
-        font-size: 18px;
+      .help-btn {
+        width: 38px;
+        height: 38px;
+        right: 12px;
+      }
+
+      .help-btn iconify-icon {
+        font-size: 22px;
+      }
+
+      .letter-card {
+        width: clamp(150px, 40vw, 200px);
+      }
+
+      .location-label {
+        font-size: 0.7rem;
+        padding: 6px 10px;
+      }
+
+      .main {
+        padding: 16px 10px 150px;
+      }
+
+      .letters {
+        gap: 10px;
       }
 
       input {
-        width: 100%;
-      }
-
-      .input-wrap {
-        width: 100%;
+        font-size: 16px;
+        height: 46px;
       }
 
       button {
-        flex: 1;
-        justify-content: center;
+        height: 46px;
+        font-size: 14px;
+        padding: 0 14px;
       }
 
-      .popup {
-        width: calc(100% - 30px);
-        right: 15px;
+      .icon-btn {
+        width: 46px;
+        height: 46px;
       }
 
-      .location-tag h4 {
-        font-size: 11px;
-        white-space: normal;
+      .controls-wrapper {
+        padding: 10px;
+      }
+
+      .input-wrap {
+        padding: 8px 10px;
+        gap: 8px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .letter-card {
+        width: 44vw;
+      }
+
+      .location-label {
+        font-size: 0.65rem;
+      }
+
+      button {
+        font-size: 13px;
+        padding: 0 10px;
       }
     }
   </style>
 </head>
 <body>
 
+<!-- ===== BLACK HEADER ===== -->
 <header>
   <div class="logo">
-    <div class="logo-circle" aria-hidden="true">LS</div>
+    <div class="logo-circle">LS</div>
     <span>Landsat Science</span>
   </div>
 
-  <h1 class="title" id="mainTitle">Your Name In Landsat</h1>
+  <div class="title" id="mainTitle">Your Name In Landsat</div>
 
-  <button class="help-btn" id="helpBtn" aria-label="About this project" title="About">
-    <iconify-icon icon="mdi:help-circle-outline" aria-hidden="true"></iconify-icon>
+  <button class="help-btn" id="helpBtn" aria-label="About">
+    <iconify-icon icon="mdi:help-circle-outline"></iconify-icon>
   </button>
 </header>
 
-<div class="popup" id="popup" role="dialog" aria-labelledby="popup-title" aria-hidden="true">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-    <h3 id="popup-title">About</h3>
-    <button id="closePopup" style="background: none; border: none; font-size: 24px; cursor: pointer; color: black; height: auto; padding: 0;" aria-label="Close popup">✕</button>
+<!-- ===== HELP POPUP ===== -->
+<div class="popup-overlay" id="helpOverlay">
+  <div class="popup">
+    <button class="popup-close" id="closeHelpPopup">✕</button>
+    <h3>About</h3>
+    <p>
+      All those images were taken by NASA / Landsat.<br><br>
+      The Landsat series of Earth-observing satellites are jointly managed by NASA and the U.S. Geological Survey (USGS).<br><br>
+      This site is fully made by PIReactive Rwanda.
+    </p>
+    <a href="https://pireactive.vercel.app/about" target="_blank" rel="noopener">
+      Contact for a FREE WEBSITE
+      <iconify-icon icon="mdi:open-in-new"></iconify-icon>
+    </a>
   </div>
-  <p>
-    All those images were taken by NASA / Landsat.<br><br>
-    This site is fully made by PIReactive Rwanda.
-  </p>
-  <a href="https://pireactive.vercel.app/about" target="_blank" rel="noopener noreferrer">
-    Contact for a FREE WEBSITE
-    <iconify-icon icon="mdi:open-in-new" aria-hidden="true"></iconify-icon>
-  </a>
 </div>
 
-<main class="main">
-  <div class="letters" id="lettersContainer" role="list" aria-label="Landsat letter images">
-    <div class="empty-state" id="emptyState">
-      <iconify-icon icon="mdi:earth" aria-hidden="true"></iconify-icon>
-      <p>Loading image database...</p>
-    </div>
+<!-- ===== QR CODE POPUP ===== -->
+<div class="popup-overlay" id="qrOverlay">
+  <div class="popup" style="text-align: center;">
+    <button class="popup-close" id="closeQrPopup">✕</button>
+    <img id="finalImg" alt="Composite" />
+    <h3>Share your image!</h3>
+    <img id="qrImg" alt="QR Code" />
+    <p class="qr-description">Scan this QR code with your mobile device to open the image externally.</p>
+    <button id="copyLinkBtn" class="copy-link-btn">
+      <iconify-icon icon="mdi:link"></iconify-icon>
+      <span id="copyLinkText">Copy Link</span>
+    </button>
   </div>
+</div>
 
+<!-- ===== MAIN CONTENT ===== -->
+<section class="main">
+  <div class="letters" id="lettersContainer"></div>
+</section>
+
+<!-- ===== FLOATING CONTROLS ===== -->
+<div class="controls-wrapper">
   <div class="controls">
-    <p>Type in your name to see it spelled out in Landsat imagery of Earth!</p>
-
     <div class="input-wrap">
-      <label for="nameInput" class="sr-only">Enter your name</label>
-      <input type="text" id="nameInput" placeholder="LANDSAT, NAME, TYPE" maxlength="15" autocomplete="off" aria-describedby="warningMsg" />
-      <button id="generateBtn" aria-label="Generate Landsat images">
-        <iconify-icon icon="mdi:keyboard-return" aria-hidden="true"></iconify-icon>
+      <input type="text" id="nameInput" placeholder="Enter a name" maxlength="25" autocomplete="off" value="LANDSAT" />
+      <button id="generateBtn">
+        <iconify-icon icon="mdi:keyboard-return"></iconify-icon>
         Enter
       </button>
-      <button id="downloadBtn" aria-label="Download images">
-        <iconify-icon icon="mdi:download" aria-hidden="true"></iconify-icon>
-        Download
+      <button id="randomizeBtn" title="Randomize images">
+        <iconify-icon icon="mdi:dice-multiple"></iconify-icon>
+        Random
       </button>
+      <a class="icon-btn" id="downloadBtn" title="Download">
+        <iconify-icon icon="mdi:download"></iconify-icon>
+      </a>
+      <a class="icon-btn" id="qrCodeBtn" title="Share QR">
+        <iconify-icon icon="mdi:qrcode"></iconify-icon>
+      </a>
     </div>
-    <div id="warningMsg" style="margin-top: 15px;" role="alert" aria-live="polite"></div>
+    <div id="warningMsg" style="margin-top: 8px;"></div>
   </div>
-</main>
-
-<!-- Load the image database -->
-<script src="images.js"></script>
+</div>
 
 <script>
 (function() {
   'use strict';
 
-  // Wait for DOM and database to be ready
-  function initializeApp() {
-    // DOM elements
-    const nameInput = document.getElementById('nameInput');
-    const generateBtn = document.getElementById('generateBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const helpBtn = document.getElementById('helpBtn');
-    const closePopup = document.getElementById('closePopup');
-    const popup = document.getElementById('popup');
-    const lettersContainer = document.getElementById('lettersContainer');
-    const mainTitle = document.getElementById('mainTitle');
-    const warningMsg = document.getElementById('warningMsg');
-    const emptyState = document.getElementById('emptyState');
+  // ===== HARDCODED IMAGE DATABASE =====
+  // Images are stored as data URIs or relative paths
+  // For production, replace with actual image paths
+  const earthDatabase = {
+    'a': [
+      { file: 'a.png', location: 'Lake Guakhmaz, Azerbaijan', lat: 40.664111, lon: 47.110056, coords_dms: "40°39'50.8\" N 47°06'36.2\" E" },
+      { file: 'a(1).png', location: 'Farm Island, Maine', lat: 45.728833, lon: -69.769139, coords_dms: "45°43'43.8\" N 69°46'08.9\" W" },
+      { file: 'a(2).png', location: 'Lake Mjøsa, Norway', lat: 60.764639, lon: 10.945333, coords_dms: "60°45'52.7\" N 10°56'43.2\" E" }
+    ],
+    'b': [
+      { file: 'b.png', location: 'Humaitá, Brazil', lat: -7.616694, lon: -62.921389, coords_dms: "7°37'00.1\" S 62°55'17.0\" W" },
+      { file: 'b(1).png', location: 'Holla Bend, Arkansas', lat: 35.14475, lon: -93.054583, coords_dms: "35°08'41.1\" N 93°03'16.5\" W" }
+    ],
+    'c': [
+      { file: 'c.png', location: 'Black Rock Desert, Nevada', lat: 40.787722, lon: -119.203611, coords_dms: "40°47'15.8\" N 119°12'13.0\" W" },
+      { file: 'c(1).png', location: 'False River, Louisiana', lat: 30.644361, lon: -91.445694, coords_dms: "30°38'39.7\" N 91°26'45.7\" W" }
+    ],
+    'd': [
+      { file: 'd.png', location: 'Lake Tandou, Australia', lat: -32.538278, lon: 142.072611, coords_dms: "32°37'17.8\" S 142°04'21.4\" E" },
+      { file: 'd(1).png', location: 'Akimiski Island, Canada', lat: 53.01625, lon: -81.306833, coords_dms: "53°00'58.5\" N 81°18'24.6\" W" }
+    ],
+    'e': [
+      { file: 'e.png', location: 'Sea of Okhotsk', lat: 54.713972, lon: 136.572333, coords_dms: "54°42'50.3\" N 136°34'20.4\" E" },
+      { file: 'e(1).png', location: 'Breiðamerkurjökull Glacier, Iceland', lat: 64.095833, lon: -16.362667, coords_dms: "64°05'45.0\" N 16°21'45.6\" W" },
+      { file: 'e(2).png', location: 'Firn-filled Fjords, Tibet', lat: 29.263028, lon: 96.317722, coords_dms: "29°15'46.9\" N 96°19'03.8\" E" }
+    ],
+    'f': [
+      { file: 'f.png', location: 'Kruger National Park, South Africa', lat: -28.733694, lon: 29.208361, coords_dms: "28°44'01.3\" S 29°12'30.1\" E" },
+      { file: 'f(1).png', location: 'Mato Grosso, Brazil', lat: -13.840806, lon: -55.298611, coords_dms: "13°50'26.9\" S 55°17'55.0\" W" }
+    ],
+    'g': [
+      { file: 'g.png', location: 'Fonte Boa, Amazonas', lat: -2.441889, lon: -66.278806, coords_dms: "2°26'30.8\" S 66°16'43.7\" W" }
+    ],
+    'h': [
+      { file: 'h.png', location: 'Khorinsky District, Russia', lat: 52.047333, lon: 109.780889, coords_dms: "52°02'50.4\" N 109°46'51.2\" E" },
+      { file: 'h(1).png', location: 'Southwestern Kyrgyzstan', lat: 40.234333, lon: 71.239667, coords_dms: "40°14'03.6\" N 71°14'22.8\" E" }
+    ],
+    'i': [
+      { file: 'i.png', location: 'Etosha National Park, Namibia', lat: -18.487556, lon: 16.170722, coords_dms: "18°29'15.2\" S 16°10'14.6\" E" },
+      { file: 'i(1).png', location: 'Canandaigua Lake, New York', lat: 42.786389, lon: -77.716139, coords_dms: "42°47'11.0\" N 77°42'58.1\" W" },
+      { file: 'i(2).png', location: 'Borgarbyggð, Iceland', lat: 64.762889, lon: -22.457778, coords_dms: "64°45'46.4\" N 22°27'28.0\" W" },
+      { file: 'i(3).png', location: 'Holuhraun Ice Field, Iceland', lat: 64.853111, lon: -16.827, coords_dms: "64°51'11.2\" N 16°49'37.2\" W" }
+    ],
+    'j': [
+      { file: 'j.png', location: 'Great Barrier Reef', lat: -18.348694, lon: 146.847611, coords_dms: "18°20'55.3\" S 146°50'51.4\" E" },
+      { file: 'j(1).png', location: 'Lake Superior, North America', lat: 46.686167, lon: -90.386528, coords_dms: "46°41'10.2\" N 90°23'11.5\" W" }
+    ],
+    'k': [
+      { file: 'k.png', location: 'Golmud, China', lat: 35.612861, lon: 95.06275, coords_dms: "35°36'46.3\" N 95°03'45.9\" E" },
+      { file: 'k(1).png', location: 'Sirmilik National Park, Canada', lat: 72.083639, lon: -76.811917, coords_dms: "72°05'01.1\" N 76°48'42.9\" W" }
+    ],
+    'l': [
+      { file: 'l.png', location: 'Regina, Saskatchewan, Canada', lat: 50.211472, lon: -104.727278, coords_dms: "50°12'41.3\" N 104°43'38.1\" W" },
+      { file: 'l(1).png', location: 'Xinjiang, China', lat: 40.067444, lon: 77.666861, coords_dms: "40°04'02.8\" N 77°40'00.7\" E" },
+      { file: 'l(2).png', location: 'Nusantara, Indonesia', lat: -0.971694, lon: 116.699694, coords_dms: "0°58'18.1\" S 116°41'58.9\" E" }
+    ],
+    'm': [
+      { file: 'm.png', location: 'Shenandoah River, Virginia', lat: 38.775611, lon: -78.401972, coords_dms: "38°46'32.2\" N 78°24'07.1\" W" },
+      { file: 'm(1).png', location: 'Potomac River', lat: 38.775611, lon: -78.401972, coords_dms: "38°46'32.2\" N 78°24'07.1\" W" }
+    ],
+    'n': [
+      { file: 'n.png', location: 'Yapacani, Bolivia', lat: -17.30825, lon: -63.888611, coords_dms: "17°18'29.7\" S 63°53'19.0\" W" },
+      { file: 'n(1).png', location: 'Yapacani, Bolivia', lat: -17.30825, lon: -63.888611, coords_dms: "17°18'29.7\" S 63°53'19.0\" W" },
+      { file: 'n(2).png', location: 'São Miguel do Araguaia, Brazil', lat: -12.945639, lon: -50.495, coords_dms: "12°56'44.3\" S 50°29'42.0\" W" }
+    ],
+    'o': [
+      { file: 'o.png', location: 'Crater Lake, Oregon', lat: 42.936111, lon: -122.101306, coords_dms: "42°56'10.0\" N 122°06'04.7\" W" }
+    ],
+    'p': [
+      { file: 'p.png', location: 'Mackenzie River Delta, Canada', lat: 68.215111, lon: -134.387583, coords_dms: "68°12'54.4\" N 134°23'15.3\" W" },
+      { file: 'p(1).png', location: 'Riberalta, Bolivia', lat: -10.878889, lon: -66.047778, coords_dms: "10°52'44.0\" S 66°02'52.0\" W" }
+    ],
+    'q': [
+      { file: 'q.png', location: 'Lonar Crater, India', lat: 19.976889, lon: 76.5085, coords_dms: "19°58'36.8\" N 76°30'30.6\" E" },
+      { file: 'q(1).png', location: 'Mount Tambora, Indonesia', lat: -8.242028, lon: 117.992, coords_dms: "8°14'31.3\" S 117°59'31.2\" E" }
+    ],
+    'r': [
+      { file: 'r.png', location: 'Canyonlands National Park, Utah', lat: 38.441056, lon: -109.750917, coords_dms: "38°26'27.8\" N 109°45'03.3\" W" },
+      { file: 'r(1).png', location: 'Province of Sondrio, Italy', lat: 46.294, lon: 9.420694, coords_dms: "46°17'38.3\" N 9°25'14.5\" E" }
+    ],
+    's': [
+      { file: 's.png', location: "N'Djamena, Chad", lat: 12.007694, lon: 15.062833, coords_dms: "12°00'27.7\" N 15°03'46.2\" E" },
+      { file: 's(1).png', location: 'Rio Chapare, Bolivia', lat: -16.934639, lon: -65.229, coords_dms: "16°56'04.7\" S 65°13'44.2\" W" },
+      { file: 's(2).png', location: 'Mackenzie River', lat: 68.416944, lon: -134.143111, coords_dms: "68°25'01.0\" N 134°08'35.2\" W" }
+    ],
+    't': [
+      { file: 't.png', location: 'Lena River Delta', lat: 72.877861, lon: 129.530972, coords_dms: "72°52'40.3\" N 129°31'51.5\" E" },
+      { file: 't(1).png', location: 'Liwa, United Arab Emirates', lat: 23.175, lon: 53.798, coords_dms: "23°10'30.0\" N 53°47'52.8\" E" }
+    ],
+    'u': [
+      { file: 'u.png', location: 'Canyonlands National Park, Utah', lat: 38.269194, lon: -109.92575, coords_dms: "38°16'09.1\" N 109°55'32.7\" W" },
+      { file: 'u(1).png', location: 'Bamforth National Wildlife Refuge, Wyoming', lat: 41.323889, lon: -105.770528, coords_dms: "41°19'26.0\" N 105°46'13.9\" W" }
+    ],
+    'v': [
+      { file: 'v.png', location: 'Cellina and Meduna Rivers, Italy', lat: 46.1115, lon: 12.757389, coords_dms: "46°06'41.4\" N 12°45'26.6\" E" },
+      { file: 'v(1).png', location: 'Padma River, Bangladesh', lat: 23.351083, lon: 90.551917, coords_dms: "23°21'03.9\" N 90°33'06.9\" E" },
+      { file: 'v(2).png', location: 'Mapleton, Maine', lat: 46.544583, lon: -68.251778, coords_dms: "46°32'40.5\" N 68°15'06.4\" W" },
+      { file: 'v(3).png', location: 'New South Wales, Australia', lat: -34.286444, lon: 150.825667, coords_dms: "34°17'11.2\" S 150°49'32.4\" E" }
+    ],
+    'w': [
+      { file: 'w.png', location: 'Ponoy River, Russia', lat: 67.036361, lon: 40.338694, coords_dms: "67°02'10.9\" N 40°20'19.3\" E" },
+      { file: 'w(1).png', location: 'La Primavera, Colombia', lat: 5.449417, lon: -69.799167, coords_dms: "5°26'57.9\" N 69°47'57.0\" W" }
+    ],
+    'x': [
+      { file: 'x.png', location: 'Sermersooq Municipality, Greenland', lat: 66.618111, lon: -36.368306, coords_dms: "66°37'05.2\" N 36°22'05.9\" W" },
+      { file: 'x(1).png', location: 'Wolstenholme Fjord, Greenland', lat: 76.734389, lon: -68.606472, coords_dms: "76°44'03.8\" N 68°36'23.3\" W" },
+      { file: 'x(2).png', location: 'Davis Straight, Greenland', lat: 62.237444, lon: -49.580528, coords_dms: "62°14'14.8\" N 49°34'49.9\" W" }
+    ],
+    'y': [
+      { file: 'y.png', location: 'Estuario de Virrila, Peru', lat: -5.864833, lon: -80.731, coords_dms: "5°51'53.4\" S 80°43'51.6\" W" },
+      { file: 'y(1).png', location: 'Bíobío River, Chile', lat: -37.267333, lon: -72.7285, coords_dms: "37°16'02.4\" S 72°43'42.9\" W" }
+    ],
+    'z': [
+      { file: 'z.png', location: 'Primavera do Leste, Brazil', lat: -15.494139, lon: -54.340972, coords_dms: "15°29'38.9\" S 54°20'27.5\" W" },
+      { file: 'z(1).png', location: 'Mohammed Boudiaf, Algeria', lat: 34.988694, lon: 4.389111, coords_dms: "34°59'19.3\" N 4°23'20.8\" E" }
+    ]
+  };
 
-    // State
-    let currentCardsData = [];
-    let currentNameRaw = '';
-    let isProcessing = false;
+  // Helper function to get image URL
+  function getImageUrl(fileName) {
+    // Since images are stored locally in the same folder, reference them directly
+    // Place all PNG files in the same directory as this HTML file
+    return fileName;
+  }
 
-    // Check if database exists
-    function checkDatabase() {
-      if (typeof earthDatabase === 'undefined' || !earthDatabase) {
-        emptyState.innerHTML = `
-          <iconify-icon icon="mdi:database-off" aria-hidden="true"></iconify-icon>
-          <p>Image database not loaded.<br>Please make sure images.js exists and is properly configured.</p>
-        `;
-        emptyState.style.display = 'flex';
-        return false;
-      }
-      return true;
+  // ===== DOM ELEMENTS =====
+  const nameInput = document.getElementById('nameInput');
+  const generateBtn = document.getElementById('generateBtn');
+  const randomizeBtn = document.getElementById('randomizeBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const qrCodeBtn = document.getElementById('qrCodeBtn');
+  const helpBtn = document.getElementById('helpBtn');
+  const lettersContainer = document.getElementById('lettersContainer');
+  const mainTitle = document.getElementById('mainTitle');
+  const warningMsg = document.getElementById('warningMsg');
+  const helpOverlay = document.getElementById('helpOverlay');
+  const closeHelpPopup = document.getElementById('closeHelpPopup');
+  const qrOverlay = document.getElementById('qrOverlay');
+  const closeQrPopup = document.getElementById('closeQrPopup');
+  const qrImg = document.getElementById('qrImg');
+  const finalImg = document.getElementById('finalImg');
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+  const copyLinkText = document.getElementById('copyLinkText');
+
+  let currentCardsData = [];
+  let currentNameRaw = '';
+
+  function showWarning(msg) {
+    warningMsg.innerHTML = `<div class="warning">⚠️ ${msg}</div>`;
+    clearTimeout(window._warnTimeout);
+    window._warnTimeout = setTimeout(() => {
+      warningMsg.innerHTML = '';
+    }, 3500);
+  }
+
+  function openGoogleMaps(lat, lon) {
+    window.open(`https://www.google.com/maps?q=${lat},${lon}&z=14`, '_blank', 'noopener,noreferrer');
+  }
+
+  function renderCards(cardsArray, nameString) {
+    lettersContainer.innerHTML = '';
+
+    if (!cardsArray || cardsArray.length === 0) return;
+
+    const fragment = document.createDocumentFragment();
+
+    cardsArray.forEach((card, idx) => {
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'letter-card';
+      cardDiv.onclick = () => openGoogleMaps(card.lat, card.lon);
+
+      // Image wrapper
+      const imageWrapper = document.createElement('div');
+      imageWrapper.className = 'image-wrapper';
+
+      const img = document.createElement('img');
+      img.src = card.img;
+      img.alt = `Landsat image: ${card.place}`;
+      img.loading = 'lazy';
+      img.onerror = function() {
+        // Fallback colored placeholder generated via SVG data URI
+        const colors = ['#1a3a5c', '#2d5a3d', '#5c3a1a', '#3d1a5c', '#5c1a3a'];
+        const color = colors[idx % colors.length];
+        this.src = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><rect fill="${color}" width="280" height="280"/><text fill="white" font-family="Arial" font-size="24" text-anchor="middle" x="140" y="130" font-weight="bold">${(nameString[idx] || '').toUpperCase()}</text><text fill="rgba(255,255,255,0.7)" font-family="Arial" font-size="12" text-anchor="middle" x="140" y="155">Image not found</text></svg>`)}`;
+      };
+
+      imageWrapper.appendChild(img);
+
+      // Location label overlay (bottom-left corner)
+      const locationLabel = document.createElement('div');
+      locationLabel.className = 'location-label';
+      locationLabel.textContent = card.place;
+
+      imageWrapper.appendChild(locationLabel);
+      cardDiv.appendChild(imageWrapper);
+      fragment.appendChild(cardDiv);
+    });
+
+    lettersContainer.appendChild(fragment);
+  }
+
+  function generateName() {
+    let input = nameInput.value.trim().toLowerCase();
+
+    if (!input) {
+      showWarning('Please enter a name!');
+      return;
     }
 
-    // Show warning message
-    function showWarning(msg) {
-      warningMsg.innerHTML = `<div class="warning" role="alert">⚠️ ${msg}</div>`;
-      clearTimeout(window.warningTimeout);
-      window.warningTimeout = setTimeout(() => {
-        warningMsg.innerHTML = '';
-      }, 4000);
+    // Filter to letters only
+    input = input.replace(/[^a-z]/g, '');
+
+    if (!input) {
+      showWarning('Please enter letters from A-Z');
+      return;
     }
 
-    // Open location in Google Maps
-    function openGoogleMaps(lat, lon) {
-      if (lat && lon) {
-        window.open(`https://www.google.com/maps?q=${lat},${lon}&z=12`, '_blank', 'noopener,noreferrer');
-      }
+    if (input.length > 25) {
+      showWarning('Maximum 25 characters allowed.');
+      return;
     }
 
-    // Render letter cards
-    function renderCards(cardsArray, nameString) {
-      if (!cardsArray || cardsArray.length === 0) {
-        if (emptyState) {
-          emptyState.style.display = 'flex';
-          emptyState.innerHTML = `
-            <iconify-icon icon="mdi:earth" aria-hidden="true"></iconify-icon>
-            <p>Type a name to see it in Landsat imagery</p>
-          `;
-        }
-        lettersContainer.innerHTML = '';
-        lettersContainer.appendChild(emptyState);
+    currentNameRaw = input;
+    const cards = [];
+
+    for (let letter of input) {
+      const options = earthDatabase[letter];
+      if (!options || options.length === 0) {
+        showWarning(`No Landsat image for letter "${letter.toUpperCase()}".`);
         return;
       }
+      const randomIndex = Math.floor(Math.random() * options.length);
+      const option = options[randomIndex];
+      cards.push({
+        img: getImageUrl(option.file),
+        place: option.location,
+        lat: option.lat,
+        lon: option.lon,
+        coords_dms: option.coords_dms
+      });
+    }
 
-      // Hide empty state
-      if (emptyState) {
-        emptyState.style.display = 'none';
+    currentCardsData = cards;
+    mainTitle.textContent = input.toUpperCase() + ' In Landsat';
+    renderCards(cards, input);
+  }
+
+  function randomizeLetters() {
+    if (!currentNameRaw || currentCardsData.length === 0) {
+      showWarning('Generate a name first!');
+      return;
+    }
+
+    const newCards = [];
+    for (let letter of currentNameRaw) {
+      const options = earthDatabase[letter];
+      if (options && options.length > 0) {
+        const randomIndex = Math.floor(Math.random() * options.length);
+        const option = options[randomIndex];
+        newCards.push({
+          img: getImageUrl(option.file),
+          place: option.location,
+          lat: option.lat,
+          lon: option.lon,
+          coords_dms: option.coords_dms
+        });
       }
+    }
 
-      // Clear container
-      lettersContainer.innerHTML = '';
+    if (newCards.length === currentNameRaw.length) {
+      currentCardsData = newCards;
+      renderCards(newCards, currentNameRaw);
+    }
+  }
 
-      // Create document fragment for better performance
-      const fragment = document.createDocumentFragment();
+  async function downloadCombinedImage() {
+    const cards = document.querySelectorAll('.letter-card');
 
-      cardsArray.forEach((card, idx) => {
-        const letter = nameString[idx] || '';
-        
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'letter-card';
-        cardDiv.setAttribute('role', 'listitem');
-        cardDiv.setAttribute('aria-label', `Letter ${letter.toUpperCase()} - ${card.place || 'Unknown location'}`);
+    if (cards.length === 0) {
+      showWarning('Generate a name first!');
+      return;
+    }
 
-        // Image wrapper
-        const imageWrapper = document.createElement('div');
-        imageWrapper.className = 'image-wrapper';
-        imageWrapper.setAttribute('role', 'button');
-        imageWrapper.setAttribute('tabindex', '0');
-        imageWrapper.setAttribute('aria-label', `View ${card.place || 'location'} on Google Maps`);
-        imageWrapper.addEventListener('click', () => openGoogleMaps(card.lat, card.lon));
-        imageWrapper.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            openGoogleMaps(card.lat, card.lon);
-          }
-        });
+    const firstCard = cards[0];
+    const width = firstCard.offsetWidth;
+    const height = firstCard.offsetHeight;
 
-        // Image
-        const img = document.createElement('img');
-        img.src = card.img || '';
-        img.alt = `Landsat satellite image of ${card.place || 'Earth'} showing letter ${letter.toUpperCase()}`;
-        img.loading = 'lazy';
-        
-        // Error handling for images
-        img.onerror = function() {
-          this.src = 'data:image/svg+xml,' + encodeURIComponent(`
-            <svg xmlns="http://www.w3.org/2000/svg" width="170" height="170">
-              <rect fill="%23e0e0e0" width="170" height="170"/>
-              <text fill="%23999999" font-family="Arial,sans-serif" font-size="16" text-anchor="middle" x="85" y="85">Image</text>
-              <text fill="%23999999" font-family="Arial,sans-serif" font-size="16" text-anchor="middle" x="85" y="105">Unavailable</text>
-            </svg>
-          `);
-          this.alt = 'Image not available';
+    if (width === 0 || height === 0) {
+      showWarning('Cannot read card dimensions. Try again.');
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const scale = 2;
+
+    canvas.width = width * cards.length * scale;
+    canvas.height = height * scale;
+    ctx.scale(scale, scale);
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(0, 0, width * cards.length, height);
+
+    let loadedCount = 0;
+
+    for (let index = 0; index < cards.length; index++) {
+      const img = cards[index].querySelector('img');
+      if (!img) { loadedCount++; continue; }
+
+      await new Promise((resolve) => {
+        const tempImg = new Image();
+        tempImg.crossOrigin = 'Anonymous';
+
+        tempImg.onload = () => {
+          ctx.drawImage(tempImg, index * width, 0, width, height);
+          loadedCount++;
+          resolve();
         };
 
-        img.onload = function() {
-          this.style.opacity = '1';
+        tempImg.onerror = () => {
+          // Draw placeholder
+          ctx.fillStyle = '#2a2a2a';
+          ctx.fillRect(index * width, 0, width, height);
+          loadedCount++;
+          resolve();
         };
 
-        img.style.opacity = '0';
-        img.style.transition = 'opacity 0.3s';
+        tempImg.src = img.src;
+      });
+    }
 
-        imageWrapper.appendChild(img);
+    if (loadedCount === cards.length) {
+      const link = document.createElement('a');
+      const name = currentNameRaw || 'landsat';
+      link.download = `${name}_landsat_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+  }
 
-        // Location info
-        const infoDiv = document.createElement('div');
-        infoDiv.className = 'location-tag';
+  function toggleHelp() {
+    helpOverlay.classList.toggle('active');
+  }
 
-        const title = document.createElement('h4');
-        title.textContent = card.place || 'Unknown location';
-        title.title = card.place || 'Unknown location';
+  function toggleQr() {
+    if (currentCardsData.length === 0) {
+      showWarning('Generate a name first!');
+      return;
+    }
+    qrOverlay.classList.toggle('active');
+    if (qrOverlay.classList.contains('active')) {
+      generateQrCode();
+    }
+  }
 
-        const openBtn = document.createElement('button');
-        openBtn.className = 'open-btn';
-        openBtn.innerHTML = '<iconify-icon icon="mdi:map-marker" aria-hidden="true"></iconify-icon> Open →';
-        openBtn.setAttribute('aria-label', `Open ${card.place || 'location'} on Google Maps`);
-        openBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openGoogleMaps(card.lat, card.lon);
-        });
-
-        infoDiv.appendChild(title);
-        infoDiv.appendChild(openBtn);
-
-        cardDiv.appendChild(imageWrapper);
-        cardDiv.appendChild(infoDiv);
-
-        fragment.appendChild(cardDiv);
+  async function generateQrCode() {
+    // Generate composite image using html2canvas
+    try {
+      const canvas = await html2canvas(lettersContainer, {
+        backgroundColor: '#1a1a1a',
+        scale: 2,
+        useCORS: true,
+        allowTaint: true
       });
 
-      lettersContainer.appendChild(fragment);
+      finalImg.src = canvas.toDataURL('image/png');
+      finalImg.style.display = 'block';
+
+      // Generate QR code
+      qrImg.innerHTML = '';
+      const shareUrl = window.location.href;
+      new QRCode(qrImg, {
+        text: shareUrl,
+        width: 200,
+        height: 200,
+        colorDark: '#000000',
+        colorLight: '#ffffff'
+      });
+    } catch (err) {
+      console.error('QR generation error:', err);
+      showWarning('Could not generate QR code.');
     }
+  }
 
-    // Generate name from input
-    function generateName() {
-      if (isProcessing) return;
-      
-      if (!checkDatabase()) return;
-
-      const input = nameInput.value.trim();
-      
-      if (!input) {
-        showWarning('Please enter a name!');
-        return;
-      }
-
-      // Allow only letters
-      const sanitized = input.toLowerCase().replace(/[^a-z]/g, '');
-      
-      if (sanitized.length === 0) {
-        showWarning('Please use only letters (A-Z) in your name.');
-        return;
-      }
-
-      if (sanitized.length > 15) {
-        showWarning('Maximum 15 characters allowed.');
-        return;
-      }
-
-      isProcessing = true;
-      generateBtn.disabled = true;
-
-      try {
-        const cards = [];
-
-        for (let letter of sanitized) {
-          const options = earthDatabase[letter];
-          
-          if (!options || !Array.isArray(options) || options.length === 0) {
-            showWarning(`No satellite images available for letter "${letter.toUpperCase()}".`);
-            isProcessing = false;
-            generateBtn.disabled = false;
-            return;
-          }
-
-          // Filter valid options
-          const validOptions = options.filter(opt => opt && opt.img);
-          
-          if (validOptions.length === 0) {
-            showWarning(`No valid images for letter "${letter.toUpperCase()}".`);
-            isProcessing = false;
-            generateBtn.disabled = false;
-            return;
-          }
-
-          // Pick random image
-          const randomIndex = Math.floor(Math.random() * validOptions.length);
-          cards.push({ ...validOptions[randomIndex] });
-        }
-
-        currentCardsData = cards;
-        currentNameRaw = sanitized;
-        mainTitle.textContent = sanitized.toUpperCase() + ' In Landsat';
-        renderCards(cards, sanitized);
-        
-      } catch (error) {
-        console.error('Error generating name:', error);
-        showWarning('An error occurred. Please try again.');
-      } finally {
-        isProcessing = false;
-        generateBtn.disabled = false;
-      }
+  async function copyShareLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      copyLinkText.textContent = 'Copied!';
+      setTimeout(() => {
+        copyLinkText.textContent = 'Copy Link';
+      }, 2000);
+    } catch (err) {
+      // Fallback
+      const input = document.createElement('input');
+      input.value = window.location.href;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      copyLinkText.textContent = 'Copied!';
+      setTimeout(() => {
+        copyLinkText.textContent = 'Copy Link';
+      }, 2000);
     }
+  }
 
-    // Download combined image
-    async function downloadCombinedImage() {
-      if (currentCardsData.length === 0) {
-        showWarning('Generate a name first before downloading!');
-        return;
-      }
+  // ===== EVENT LISTENERS =====
+  generateBtn.addEventListener('click', generateName);
+  randomizeBtn.addEventListener('click', randomizeLetters);
+  downloadBtn.addEventListener('click', (e) => { e.preventDefault(); downloadCombinedImage(); });
+  qrCodeBtn.addEventListener('click', (e) => { e.preventDefault(); toggleQr(); });
+  helpBtn.addEventListener('click', toggleHelp);
+  closeHelpPopup.addEventListener('click', toggleHelp);
+  closeQrPopup.addEventListener('click', toggleQr);
+  copyLinkBtn.addEventListener('click', copyShareLink);
 
-      const cards = document.querySelectorAll('.letter-card');
-      if (cards.length === 0) {
-        showWarning('No images to download.');
-        return;
-      }
+  // Close overlays on background click
+  helpOverlay.addEventListener('click', function(e) {
+    if (e.target === helpOverlay) toggleHelp();
+  });
+  qrOverlay.addEventListener('click', function(e) {
+    if (e.target === qrOverlay) toggleQr();
+  });
 
-      downloadBtn.disabled = true;
-      downloadBtn.innerHTML = '<iconify-icon icon="mdi:loading" aria-hidden="true"></iconify-icon> Preparing...';
-
-      try {
-        const firstCard = cards[0];
-        const width = firstCard.offsetWidth;
-        const height = firstCard.offsetHeight;
-
-        if (width === 0 || height === 0) {
-          throw new Error('Cannot determine image dimensions');
-        }
-
-        // Create canvas
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Higher quality with device pixel ratio
-        const scale = 2;
-        canvas.width = width * cards.length * scale;
-        canvas.height = height * scale;
-        ctx.scale(scale, scale);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, width * cards.length, height);
-
-        // Load and draw each image
-        for (let index = 0; index < cards.length; index++) {
-          const imgElement = cards[index].querySelector('img');
-          if (!imgElement || !imgElement.src) continue;
-          
-          try {
-            await new Promise((resolve, reject) => {
-              const img = new Image();
-              img.crossOrigin = 'anonymous';
-              
-              const timeout = setTimeout(() => {
-                reject(new Error('Image load timeout'));
-              }, 5000);
-              
-              img.onload = () => {
-                clearTimeout(timeout);
-                ctx.drawImage(img, index * width, 0, width, height);
-                resolve();
-              };
-              
-              img.onerror = () => {
-                clearTimeout(timeout);
-                // Draw placeholder on error
-                ctx.fillStyle = '#e0e0e0';
-                ctx.fillRect(index * width, 0, width, height);
-                ctx.fillStyle = '#999999';
-                ctx.font = '14px Arial, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('Image unavailable', index * width + width/2, height/2);
-                resolve(); // Continue despite error
-              };
-              
-              img.src = imgElement.src;
-            });
-          } catch (err) {
-            console.warn('Failed to load image:', err);
-            // Draw placeholder
-            ctx.fillStyle = '#e0e0e0';
-            ctx.fillRect(index * width, 0, width, height);
-            ctx.fillStyle = '#999999';
-            ctx.font = '14px Arial, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('Image unavailable', index * width + width/2, height/2);
-          }
-        }
-
-        // Convert to blob and download
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            const name = currentNameRaw || 'landsat';
-            const timestamp = new Date().toISOString().slice(0, 10);
-            link.download = `${name}_landsat_${timestamp}.png`;
-            link.href = url;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
-          } else {
-            showWarning('Failed to create image. Please try again.');
-          }
-        }, 'image/png', 1.0);
-
-      } catch (error) {
-        console.error('Download failed:', error);
-        showWarning('Failed to download images. Please try again.');
-      } finally {
-        downloadBtn.disabled = false;
-        downloadBtn.innerHTML = '<iconify-icon icon="mdi:download" aria-hidden="true"></iconify-icon> Download';
-      }
+  // Close overlays with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (qrOverlay.classList.contains('active')) toggleQr();
+      if (helpOverlay.classList.contains('active')) toggleHelp();
     }
+  });
 
-    // Toggle popup
-    function openPopup() {
-      popup.classList.add('active');
-      popup.setAttribute('aria-hidden', 'false');
-      closePopup.focus();
+  nameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') generateName();
+  });
+
+  // Filter input to letters only
+  nameInput.addEventListener('input', function() {
+    const cursorPos = this.selectionStart;
+    const oldValue = this.value;
+    const newValue = oldValue.replace(/[^a-zA-Z\s]/g, '');
+    if (oldValue !== newValue) {
+      this.value = newValue;
+      const diff = oldValue.length - newValue.length;
+      this.setSelectionRange(cursorPos - diff, cursorPos - diff);
     }
+  });
 
-    function closePopupFn() {
-      popup.classList.remove('active');
-      popup.setAttribute('aria-hidden', 'true');
-    }
+  // ===== INITIALIZE =====
+  function init() {
+    nameInput.value = 'LANDSAT';
+    // Small delay to let DOM render
+    setTimeout(() => {
+      generateName();
+    }, 200);
+  }
 
-    // Event listeners
-    generateBtn.addEventListener('click', generateName);
-    
-    downloadBtn.addEventListener('click', downloadCombinedImage);
-    
-    helpBtn.addEventListener('click', openPopup);
-    
-    closePopup.addEventListener('click', closePopupFn);
-    
-    nameInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        generateName();
-      }
-    });
-
-    // Filter non-letter characters on input
-    nameInput.addEventListener('input', function(e) {
-      const cursorPos = this.selectionStart;
-      const oldValue = this.value;
-      const newValue = oldValue.replace(/[^a-zA-Z\s]/g, '');
-      
-      if (oldValue !== newValue) {
-        this.value = newValue;
-        const posDiff = oldValue.length - newValue.length;
-        this.setSelectionRange(cursorPos - posDiff, cursorPos - posDiff);
-      }
-    });
-
-    // Close popup when clicking outside
-    document.addEventListener('click', function(e) {
-      if (popup.classList.contains('active') && 
-          !popup.contains(e.target) && 
-          e.target !== helpBtn &&
-          !helpBtn.contains(e.target)) {
-        closePopupFn();
-      }
-    });
-
-    // Close popup with Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && popup.classList.contains('active')) {
-        closePopupFn();
-        helpBtn.focus();
-      }
-    });
-
-    // Initialize application
-    function init() {
-      if (checkDatabase()) {
-        nameInput.value = 'LANDSAT';
-        // Small delay to ensure everything is ready
-        setTimeout(() => {
-          generateName();
-        }, 100);
-      } else {
-        emptyState.style.display = 'flex';
-      }
-    }
-
-    // Start the app
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
     init();
   }
-
-  // Start when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeApp);
-  } else {
-    initializeApp();
-  }
-
 })();
 </script>
 
