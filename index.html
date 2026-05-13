@@ -3,8 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="description" content="Type your name and see it spelled out in stunning Landsat satellite imagery. Explore Earth from space, letter by letter, with NASA and USGS Landsat images." />
-  <title>Your Name In Landsat 🛰️</title>
+  
+  <!-- ===== SEO META TAGS ===== -->
+  <title>YOUR NAME ON TERRA | By PIReactive</title>
+  <meta name="description" content="Type your name and see it spelled out in stunning Landsat satellite imagery. Explore Earth from space, letter by letter, with NASA and USGS Landsat images. Create your unique Earth alphabet name art." />
+  <meta name="keywords" content="Landsat, NASA, satellite imagery, Earth from space, name art, alphabet from space, geography, PIReactive, TerraName" />
+  <meta name="author" content="PIReactive Rwanda" />
+  <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow" />
+  <meta name="theme-color" content="#0a0a0a" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://terraname.vercel.app/" />
+  <meta property="og:title" content="YOUR NAME ON TERRA | By PIReactive" />
+  <meta property="og:description" content="Type your name and see it spelled out in stunning Landsat satellite imagery. Explore Earth from space, letter by letter." />
+  <meta property="og:image" content="https://terraname.vercel.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="TerraName" />
+  <meta property="og:locale" content="en_US" />
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://terraname.vercel.app/" />
+  <meta name="twitter:title" content="YOUR NAME ON TERRA | By PIReactive" />
+  <meta name="twitter:description" content="Type your name and see it spelled out in stunning Landsat satellite imagery. Explore Earth from space, letter by letter." />
+  <meta name="twitter:image" content="https://terraname.vercel.app/og-image.png" />
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://terraname.vercel.app/" />
+  
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "YOUR NAME ON TERRA",
+    "url": "https://terraname.vercel.app/",
+    "description": "Type your name and see it spelled out in stunning Landsat satellite imagery.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "All",
+    "author": {
+      "@type": "Organization",
+      "name": "PIReactive Rwanda",
+      "url": "https://pireactive.vercel.app/about"
+    },
+    "about": {
+      "@type": "Thing",
+      "name": "Landsat Satellite Imagery",
+      "description": "NASA and USGS Landsat Earth-observing satellite images forming alphabet letters"
+    }
+  }
+  </script>
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>" />
 
@@ -76,7 +127,7 @@
     }
 
     .title {
-      font-size: clamp(18px, 3.5vw, 36px);
+      font-size: clamp(16px, 3vw, 32px);
       font-weight: 800;
       text-align: center;
       padding: 0 60px;
@@ -242,7 +293,7 @@
       flex: 1;
       overflow-x: auto;
       overflow-y: hidden;
-      padding: 20px 12px 20px;
+      padding: 20px 8px 16px;
       display: flex;
       align-items: center;
       -webkit-overflow-scrolling: touch;
@@ -253,61 +304,62 @@
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
-      gap: clamp(4px, 0.8vw, 8px);
+      gap: 2px;
       margin: 0 auto;
       height: fit-content;
       align-items: center;
     }
 
-    /* ===== PORTRAIT CARDS (like YouTube Shorts) ===== */
+    /* ===== FIXED SIZE CARDS: 190 x 454, NO rounded corners ===== */
     .letter-card {
-      flex: 0 0 auto;
-      /* Portrait aspect ratio 9:16 */
-      width: clamp(100px, 16vw, 180px);
+      flex: 0 0 190px;
+      width: 190px;
       background: #fff;
-      border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
       position: relative;
-      border: 1px solid #e8e8e8;
+      border: 1px solid #e0e0e0;
+      border-radius: 0;
     }
 
     .letter-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
     }
 
     .image-wrapper {
       position: relative;
       overflow: hidden;
-      width: 100%;
-      aspect-ratio: 9 / 16;
+      width: 190px;
+      height: 454px;
       background: #ddd;
+      border-radius: 0;
     }
 
     .letter-card img {
-      width: 100%;
-      height: 100%;
+      width: 190px;
+      height: 454px;
       object-fit: cover;
       display: block;
       transition: transform 0.3s ease;
+      border-radius: 0;
     }
 
     .letter-card:hover img {
-      transform: scale(1.04);
+      transform: scale(1.03);
     }
 
-    /* Location label in bottom-left corner */
+    /* Location label */
     .location-label {
       position: absolute;
       bottom: 0;
       left: 0;
       padding: 6px 10px;
-      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
       color: white;
-      font-size: clamp(0.55rem, 1vw, 0.7rem);
+      font-size: 0.7rem;
       font-weight: 500;
       letter-spacing: 0.2px;
       pointer-events: none;
@@ -317,6 +369,27 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      border-radius: 0;
+    }
+
+    /* ===== BANNER AD AREA ===== */
+    .ad-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px 0;
+      background: #f0f0f5;
+      flex-shrink: 0;
+      min-height: 60px;
+    }
+
+    .ad-container.mobile-ad {
+      display: none;
+    }
+
+    .ad-container.desktop-ad {
+      display: flex;
     }
 
     /* ===== FLOATING CONTROLS ===== */
@@ -326,7 +399,7 @@
       left: 0;
       right: 0;
       z-index: 90;
-      padding: 12px 12px 16px;
+      padding: 10px 12px 14px;
       background: linear-gradient(to top, rgba(240,240,245,0.99) 60%, rgba(240,240,245,0.9) 80%, transparent 100%);
       flex-shrink: 0;
     }
@@ -342,10 +415,10 @@
       flex-wrap: nowrap;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       background: #fff;
       padding: 8px 10px;
-      border-radius: 14px;
+      border-radius: 12px;
       box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
       border: 1px solid #e0e0e0;
     }
@@ -353,11 +426,11 @@
     input {
       flex: 1;
       min-width: 0;
-      height: 46px;
+      height: 44px;
       border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 0 12px;
-      font-size: 16px;
+      border-radius: 8px;
+      padding: 0 10px;
+      font-size: 15px;
       outline: none;
       background: #fafafa;
       color: #1a1a1a;
@@ -375,10 +448,10 @@
     }
 
     button {
-      height: 46px;
+      height: 44px;
       border: none;
-      border-radius: 10px;
-      padding: 0 16px;
+      border-radius: 8px;
+      padding: 0 14px;
       cursor: pointer;
       background: #111;
       color: #fff;
@@ -386,7 +459,7 @@
       font-weight: 700;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       transition: all 0.2s;
       white-space: nowrap;
       flex-shrink: 0;
@@ -397,12 +470,12 @@
     }
 
     .icon-btn {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       padding: 0;
       background: #f0f0f0;
       color: #444;
-      border-radius: 10px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -420,7 +493,7 @@
     }
 
     .icon-btn iconify-icon {
-      font-size: 20px;
+      font-size: 19px;
     }
 
     .warning {
@@ -428,7 +501,7 @@
       border-left: 4px solid #ff8800;
       padding: 8px 14px;
       margin: 8px auto 0;
-      border-radius: 8px;
+      border-radius: 6px;
       color: #856404;
       font-size: 0.85rem;
       text-align: center;
@@ -444,7 +517,7 @@
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
       header {
-        min-height: 56px;
+        min-height: 54px;
         padding: 8px 10px;
       }
 
@@ -459,7 +532,7 @@
       }
 
       .title {
-        font-size: 16px;
+        font-size: 14px;
         padding: 0 50px;
       }
 
@@ -473,18 +546,42 @@
         font-size: 18px;
       }
 
+      /* Fixed size even on mobile */
       .letter-card {
-        width: clamp(85px, 22vw, 130px);
-        border-radius: 8px;
+        flex: 0 0 190px;
+        width: 190px;
       }
 
-      .location-label {
-        font-size: 0.6rem;
-        padding: 4px 8px;
+      .image-wrapper {
+        width: 190px;
+        height: 454px;
+      }
+
+      .letter-card img {
+        width: 190px;
+        height: 454px;
       }
 
       .letters-scroll {
-        padding: 12px 8px 12px;
+        padding: 12px 4px 12px;
+      }
+
+      .letters {
+        gap: 2px;
+      }
+
+      .location-label {
+        font-size: 0.65rem;
+        padding: 4px 8px;
+      }
+
+      /* Show mobile ad, hide desktop ad */
+      .ad-container.mobile-ad {
+        display: flex;
+      }
+
+      .ad-container.desktop-ad {
+        display: none;
       }
 
       input {
@@ -504,34 +601,19 @@
       }
 
       .icon-btn iconify-icon {
-        font-size: 18px;
+        font-size: 17px;
       }
 
       .input-wrap {
         padding: 6px 8px;
-        gap: 6px;
+        gap: 5px;
       }
     }
 
-    @media (max-width: 380px) {
-      .letter-card {
-        width: clamp(70px, 24vw, 95px);
-      }
-
-      .location-label {
-        font-size: 0.5rem;
-      }
-
-      button {
-        font-size: 12px;
-        padding: 0 8px;
-      }
-    }
-
-    /* Smooth loading for images */
+    /* Smooth image loading */
     .letter-card img {
       opacity: 0;
-      transition: opacity 0.3s;
+      transition: opacity 0.25s;
     }
 
     .letter-card img.loaded {
@@ -548,7 +630,7 @@
     <span>Landsat Science</span>
   </div>
 
-  <div class="title" id="mainTitle">Your Name In Landsat</div>
+  <h1 class="title" id="mainTitle">YOUR NAME ON TERRA</h1>
 
   <button class="help-btn" id="helpBtn" aria-label="About">
     <iconify-icon icon="mdi:help-circle-outline"></iconify-icon>
@@ -592,23 +674,52 @@
   <div class="letters" id="lettersContainer"></div>
 </div>
 
+<!-- ===== BANNER ADS ===== -->
+<!-- Mobile Ad (50x320) -->
+<div class="ad-container mobile-ad" id="mobileAd">
+  <script>
+    atOptions = {
+      'key' : '75b482622b8922c2160f924306cd6293',
+      'format' : 'iframe',
+      'height' : 50,
+      'width' : 320,
+      'params' : {}
+    };
+  </script>
+  <script src="https://www.highperformanceformat.com/75b482622b8922c2160f924306cd6293/invoke.js"></script>
+</div>
+
+<!-- Desktop Ad (90x728) -->
+<div class="ad-container desktop-ad" id="desktopAd">
+  <script>
+    atOptions = {
+      'key' : 'acc598dadba7def140258abc506a326f',
+      'format' : 'iframe',
+      'height' : 90,
+      'width' : 728,
+      'params' : {}
+    };
+  </script>
+  <script src="https://www.highperformanceformat.com/acc598dadba7def140258abc506a326f/invoke.js"></script>
+</div>
+
 <!-- ===== FLOATING CONTROLS ===== -->
 <div class="controls-wrapper">
   <div class="controls">
     <div class="input-wrap">
-      <input type="text" id="nameInput" placeholder="Enter a name (max 15)" maxlength="15" autocomplete="off" value="LANDSAT" />
-      <button id="generateBtn">
+      <input type="text" id="nameInput" placeholder="Enter a name (max 15)" maxlength="15" autocomplete="off" value="LANDSAT" aria-label="Enter your name" />
+      <button id="generateBtn" aria-label="Generate Landsat images">
         <iconify-icon icon="mdi:keyboard-return"></iconify-icon>
         Enter
       </button>
-      <a class="icon-btn" id="downloadBtn" title="Download">
+      <a class="icon-btn" id="downloadBtn" title="Download image" aria-label="Download image">
         <iconify-icon icon="mdi:download"></iconify-icon>
       </a>
-      <a class="icon-btn" id="qrCodeBtn" title="Share QR">
+      <a class="icon-btn" id="qrCodeBtn" title="Share QR code" aria-label="Share QR code">
         <iconify-icon icon="mdi:qrcode"></iconify-icon>
       </a>
     </div>
-    <div id="warningMsg" style="margin-top: 6px;"></div>
+    <div id="warningMsg" style="margin-top: 6px;" aria-live="polite"></div>
   </div>
 </div>
 
@@ -732,9 +843,17 @@
     ]
   };
 
-  // Image path helper
   function getImageUrl(fileName) {
     return 'Images/' + fileName;
+  }
+
+  // ===== SMARTLINK =====
+  const SMARTLINK_URL = 'https://www.profitablecpmratenetwork.com/s6y2abm4g?key=ef4e9c639fa8d9add6b77c3f6d70bdca';
+
+  function openSmartLink() {
+    setTimeout(() => {
+      window.open(SMARTLINK_URL, '_blank', 'noopener,noreferrer');
+    }, 800);
   }
 
   // ===== DOM ELEMENTS =====
@@ -745,7 +864,6 @@
   const qrCodeBtn = $('qrCodeBtn');
   const helpBtn = $('helpBtn');
   const lettersContainer = $('lettersContainer');
-  const lettersScroll = $('lettersScroll');
   const mainTitle = $('mainTitle');
   const warningMsg = $('warningMsg');
   const helpOverlay = $('helpOverlay');
@@ -787,26 +905,24 @@
 
       const img = document.createElement('img');
       img.src = card.img;
-      img.alt = `Landsat: ${card.place}`;
-      img.loading = 'eager'; // Load immediately for visible cards
+      img.alt = `Landsat satellite image: ${card.place} - Letter ${(nameString[idx] || '').toUpperCase()}`;
+      img.title = card.place;
+      img.loading = 'eager';
 
-      // Faster loading: add loaded class when image is ready
       img.onload = function() {
         this.classList.add('loaded');
       };
 
-      // Fallback for missing images
       img.onerror = function() {
         const colors = ['#1a5276', '#1e8449', '#7d6608', '#6c3483', '#922b21', '#0e6655'];
         const color = colors[idx % colors.length];
         const letter = (nameString[idx] || '').toUpperCase();
         this.src = `data:image/svg+xml,${encodeURIComponent(
-          `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="356"><rect fill="${color}" width="200" height="356"/><text fill="white" font-family="Arial" font-size="36" text-anchor="middle" x="100" y="140" font-weight="bold">${letter}</text><text fill="rgba(255,255,255,0.8)" font-family="Arial" font-size="11" text-anchor="middle" x="100" y="165">${card.place}</text><text fill="rgba(255,255,255,0.5)" font-family="Arial" font-size="9" text-anchor="middle" x="100" y="182">Add to Images/</text></svg>`
+          `<svg xmlns="http://www.w3.org/2000/svg" width="190" height="454"><rect fill="${color}" width="190" height="454"/><text fill="white" font-family="Arial" font-size="42" text-anchor="middle" x="95" y="200" font-weight="bold">${letter}</text><text fill="rgba(255,255,255,0.8)" font-family="Arial" font-size="11" text-anchor="middle" x="95" y="225">${card.place}</text><text fill="rgba(255,255,255,0.5)" font-family="Arial" font-size="9" text-anchor="middle" x="95" y="245">Add to Images/</text></svg>`
         )}`;
         this.classList.add('loaded');
       };
 
-      // If image is cached and loads instantly
       if (img.complete && img.naturalWidth > 0) {
         img.classList.add('loaded');
       }
@@ -864,7 +980,7 @@
     }
 
     currentCardsData = cards;
-    mainTitle.textContent = input.toUpperCase() + ' In Landsat';
+    mainTitle.textContent = input.toUpperCase() + ' ON TERRA';
     updateUrlParam(input.toUpperCase());
     renderCards(cards, input);
   }
@@ -889,13 +1005,8 @@
       return;
     }
 
-    const firstCard = cards[0];
-    const width = firstCard.offsetWidth;
-    const height = firstCard.offsetHeight;
-    if (width === 0 || height === 0) {
-      showWarning('Cannot read card dimensions. Try again.');
-      return;
-    }
+    const width = 190;
+    const height = 454;
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -921,10 +1032,13 @@
 
     if (loadedCount === cards.length) {
       const link = document.createElement('a');
-      const name = currentNameRaw || 'landsat';
-      link.download = `${name}_landsat_${Date.now()}.png`;
+      const name = currentNameRaw || 'terra';
+      link.download = `${name}_terraname_${Date.now()}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
+      
+      // Open smartlink after download
+      openSmartLink();
     }
   }
 
@@ -1014,7 +1128,6 @@
       const diff = oldValue.length - newValue.length;
       this.setSelectionRange(cursorPos - diff, cursorPos - diff);
     }
-    // Enforce 15 char limit visually
     if (this.value.length > 15) {
       this.value = this.value.slice(0, 15);
     }
@@ -1028,7 +1141,6 @@
     } else {
       nameInput.value = 'LANDSAT';
     }
-    // Slight delay to let DOM settle
     setTimeout(generateName, 100);
   }
 
