@@ -75,15 +75,18 @@
       color: #1a1a1a;
       overflow-x: hidden;
       min-height: 100vh;
+      height: 100vh;
       -webkit-font-smoothing: antialiased;
       display: flex;
       flex-direction: column;
+      /* Prevent any scroll bouncing */
+      overscroll-behavior: none;
     }
 
     /* ===== DARK HEADER ===== */
     header {
       width: 100%;
-      min-height: 70px;
+      min-height: 60px;
       background: #0a0a0a;
       color: white;
       display: flex;
@@ -92,7 +95,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      padding: 10px 16px;
+      padding: 8px 16px;
       border-bottom: 1px solid #222;
       box-shadow: 0 2px 12px rgba(0,0,0,0.3);
       flex-shrink: 0;
@@ -107,27 +110,27 @@
     }
 
     .logo-circle {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: linear-gradient(135deg, #0a43ff, #2dc7ff);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 14px;
       color: white;
       flex-shrink: 0;
     }
 
     .logo span {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       white-space: nowrap;
     }
 
     .title {
-      font-size: clamp(16px, 3vw, 32px);
+      font-size: clamp(14px, 2.5vw, 28px);
       font-weight: 800;
       text-align: center;
       padding: 0 60px;
@@ -140,8 +143,8 @@
     .help-btn {
       position: absolute;
       right: 16px;
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       border: 2px solid rgba(255, 255, 255, 0.7);
       display: flex;
@@ -159,7 +162,7 @@
     }
 
     .help-btn iconify-icon {
-      font-size: 22px;
+      font-size: 20px;
     }
 
     /* ===== POPUP OVERLAYS ===== */
@@ -288,32 +291,37 @@
       border-color: #ccc;
     }
 
-    /* ===== SCROLLABLE LETTERS CONTAINER ===== */
-    .letters-scroll {
+    /* ===== LETTERS CONTAINER - NO SCROLL, AUTO-FIT ===== */
+    .letters-area {
       flex: 1;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding: 20px 8px 16px;
       display: flex;
       align-items: center;
-      -webkit-overflow-scrolling: touch;
-      scroll-behavior: smooth;
+      justify-content: center;
+      padding: 12px;
+      overflow: hidden; /* No scrolling */
     }
 
     .letters {
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
-      gap: 2px;
-      margin: 0 auto;
-      height: fit-content;
+      justify-content: center;
       align-items: center;
+      gap: 2px;
+      /* Auto-fit: cards shrink to fit available width */
+      width: 100%;
+      max-width: 100%;
     }
 
-    /* ===== FIXED SIZE CARDS: 190 x 454, NO rounded corners ===== */
+    /* ===== CARD WITH ASPECT RATIO - Auto-resizing ===== */
     .letter-card {
-      flex: 0 0 190px;
-      width: 190px;
+      /* The card will shrink but maintain 190:454 ratio */
+      flex: 1 1 auto;
+      min-width: 40px;
+      max-width: 190px;
+      width: calc((100% - (var(--card-count, 7) - 1) * 2px) / var(--card-count, 7));
+      aspect-ratio: 190 / 454;
+      height: auto;
       background: #fff;
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -327,20 +335,21 @@
     .letter-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+      z-index: 5;
     }
 
     .image-wrapper {
       position: relative;
       overflow: hidden;
-      width: 190px;
-      height: 454px;
+      width: 100%;
+      height: 100%;
       background: #ddd;
       border-radius: 0;
     }
 
     .letter-card img {
-      width: 190px;
-      height: 454px;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       display: block;
       transition: transform 0.3s ease;
@@ -356,10 +365,10 @@
       position: absolute;
       bottom: 0;
       left: 0;
-      padding: 6px 10px;
+      padding: 4px 8px;
       background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
       color: white;
-      font-size: 0.7rem;
+      font-size: clamp(0.35rem, 1.2vw, 0.7rem);
       font-weight: 500;
       letter-spacing: 0.2px;
       pointer-events: none;
@@ -378,10 +387,10 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 8px 0;
+      padding: 6px 0;
       background: #f0f0f5;
       flex-shrink: 0;
-      min-height: 60px;
+      min-height: 50px;
     }
 
     .ad-container.mobile-ad {
@@ -394,14 +403,10 @@
 
     /* ===== FLOATING CONTROLS ===== */
     .controls-wrapper {
-      position: sticky;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 90;
-      padding: 10px 12px 14px;
-      background: linear-gradient(to top, rgba(240,240,245,0.99) 60%, rgba(240,240,245,0.9) 80%, transparent 100%);
       flex-shrink: 0;
+      z-index: 90;
+      padding: 8px 12px 12px;
+      background: linear-gradient(to top, rgba(240,240,245,0.99) 60%, rgba(240,240,245,0.9) 80%, transparent 100%);
     }
 
     .controls {
@@ -517,14 +522,14 @@
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
       header {
-        min-height: 54px;
-        padding: 8px 10px;
+        min-height: 50px;
+        padding: 6px 10px;
       }
 
       .logo-circle {
-        width: 32px;
-        height: 32px;
-        font-size: 13px;
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
       }
 
       .logo span {
@@ -532,47 +537,31 @@
       }
 
       .title {
-        font-size: 14px;
-        padding: 0 50px;
+        font-size: 13px;
+        padding: 0 45px;
       }
 
       .help-btn {
-        width: 34px;
-        height: 34px;
+        width: 30px;
+        height: 30px;
         right: 10px;
       }
 
       .help-btn iconify-icon {
-        font-size: 18px;
+        font-size: 16px;
       }
 
-      /* Fixed size even on mobile */
+      .letters-area {
+        padding: 8px 4px;
+      }
+
       .letter-card {
-        flex: 0 0 190px;
-        width: 190px;
-      }
-
-      .image-wrapper {
-        width: 190px;
-        height: 454px;
-      }
-
-      .letter-card img {
-        width: 190px;
-        height: 454px;
-      }
-
-      .letters-scroll {
-        padding: 12px 4px 12px;
-      }
-
-      .letters {
-        gap: 2px;
+        min-width: 30px;
       }
 
       .location-label {
-        font-size: 0.65rem;
-        padding: 4px 8px;
+        font-size: clamp(0.3rem, 1.5vw, 0.55rem);
+        padding: 2px 5px;
       }
 
       /* Show mobile ad, hide desktop ad */
@@ -585,28 +574,48 @@
       }
 
       input {
-        height: 40px;
-        font-size: 14px;
+        height: 38px;
+        font-size: 13px;
       }
 
       button {
-        height: 40px;
-        font-size: 13px;
+        height: 38px;
+        font-size: 12px;
         padding: 0 10px;
       }
 
       .icon-btn {
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
       }
 
       .icon-btn iconify-icon {
-        font-size: 17px;
+        font-size: 16px;
       }
 
       .input-wrap {
         padding: 6px 8px;
-        gap: 5px;
+        gap: 4px;
+      }
+
+      .controls-wrapper {
+        padding: 6px 8px 10px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .letter-card {
+        min-width: 24px;
+      }
+
+      .location-label {
+        font-size: 0.3rem;
+        padding: 1px 3px;
+      }
+
+      button {
+        padding: 0 8px;
+        font-size: 11px;
       }
     }
 
@@ -669,8 +678,8 @@
   </div>
 </div>
 
-<!-- ===== SCROLLABLE LETTERS ===== -->
-<div class="letters-scroll" id="lettersScroll">
+<!-- ===== LETTERS - NO SCROLL, AUTO-FIT ===== -->
+<div class="letters-area">
   <div class="letters" id="lettersContainer"></div>
 </div>
 
@@ -847,7 +856,6 @@
     return 'Images/' + fileName;
   }
 
-  // ===== SMARTLINK =====
   const SMARTLINK_URL = 'https://www.profitablecpmratenetwork.com/s6y2abm4g?key=ef4e9c639fa8d9add6b77c3f6d70bdca';
 
   function openSmartLink() {
@@ -892,6 +900,10 @@
   function renderCards(cardsArray, nameString) {
     lettersContainer.innerHTML = '';
     if (!cardsArray || cardsArray.length === 0) return;
+
+    // Set CSS variable for auto-sizing calculation
+    const count = cardsArray.length;
+    lettersContainer.style.setProperty('--card-count', count);
 
     const fragment = document.createDocumentFragment();
 
@@ -1005,8 +1017,14 @@
       return;
     }
 
-    const width = 190;
-    const height = 454;
+    const firstCard = cards[0];
+    const width = firstCard.offsetWidth;
+    const height = firstCard.offsetHeight;
+
+    if (width === 0 || height === 0) {
+      showWarning('Cannot read card dimensions. Try again.');
+      return;
+    }
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -1036,8 +1054,6 @@
       link.download = `${name}_terraname_${Date.now()}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
-      
-      // Open smartlink after download
       openSmartLink();
     }
   }
@@ -1132,6 +1148,16 @@
       this.value = this.value.slice(0, 15);
     }
   });
+
+  // ===== RESPONSIVE RESIZE HANDLER =====
+  function handleResize() {
+    if (currentCardsData.length > 0) {
+      const count = currentCardsData.length;
+      lettersContainer.style.setProperty('--card-count', count);
+    }
+  }
+
+  window.addEventListener('resize', handleResize);
 
   // ===== INITIALIZE =====
   function init() {
